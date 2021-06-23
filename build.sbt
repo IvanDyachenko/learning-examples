@@ -1,17 +1,14 @@
+ThisBuild / name := "concurrency-examples"
+ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / scalaVersion := "2.11.1"
 
-name := "concurrency-examples"
-
-version := "1.0"
-
-scalaVersion in ThisBuild := "2.11.1"
+fork := false
 
 resolvers ++= Seq(
   "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases",
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+  ("Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/").withAllowInsecureProtocol(true)
 )
-
-fork := false
 
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
 
@@ -39,6 +36,6 @@ libraryDependencies += "com.quantifind" %% "wisp" % "0.0.4"
 
 libraryDependencies += "org.scalafx" %% "scalafx" % "1.0.0-R8"
 
-unmanagedJars in Compile += Attributed.blank(file(scala.util.Properties.javaHome) / "/lib/jfxrt.jar")
-
 libraryDependencies += "com.storm-enroute" %% "reactive-collections" % "0.5"
+
+unmanagedJars in Compile += Attributed.blank(file(scala.util.Properties.javaHome) / "/lib/jfxrt.jar")
