@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch5
 
-
-
-
-
-
 object ConcurrentWrong extends App {
   import scala.collection._
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,18 +15,17 @@ object ConcurrentWrong extends App {
 
   val ifut = for {
     htmlSpec <- getHtmlSpec()
-    urlSpec <- getUrlSpec()
+    urlSpec  <- getUrlSpec()
   } yield {
     val htmlWords = htmlSpec.mkString.split("\\s+").toSet
-    val urlWords = urlSpec.mkString.split("\\s+").toSet
+    val urlWords  = urlSpec.mkString.split("\\s+").toSet
     intersection(htmlWords, urlWords)
   }
 
-  ifut onComplete {
-    case t => log(s"Result: $t")
+  ifut onComplete { case t =>
+    log(s"Result: $t")
   }
 }
-
 
 object ConcurrentCollections extends App {
   import java.util.concurrent.ConcurrentSkipListSet
@@ -50,10 +44,10 @@ object ConcurrentCollections extends App {
 
   val ifut = for {
     htmlSpec <- getHtmlSpec()
-    urlSpec <- getUrlSpec()
+    urlSpec  <- getUrlSpec()
   } yield {
     val htmlWords = htmlSpec.mkString.split("\\s+").toSet
-    val urlWords = urlSpec.mkString.split("\\s+").toSet
+    val urlWords  = urlSpec.mkString.split("\\s+").toSet
     intersection(htmlWords, urlWords)
   }
 
@@ -62,7 +56,6 @@ object ConcurrentCollections extends App {
   }
 
 }
-
 
 object ConcurrentCollectionsBad extends App {
   import java.util.concurrent.ConcurrentSkipListSet
@@ -73,10 +66,9 @@ object ConcurrentCollectionsBad extends App {
 
   val c = new ConcurrentSkipListSet[Int]
   for (i <- 0 until 100) c.add(i)
-  
+
   for (x <- toPar(c)) c.add(x) // bad
 }
-
 
 object ConcurrentTrieMap extends App {
   import scala.collection._
@@ -88,6 +80,3 @@ object ConcurrentTrieMap extends App {
 
   log(s"cache - ${cache.keys.toList.sorted}")
 }
-
-
-

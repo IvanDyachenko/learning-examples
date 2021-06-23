@@ -1,16 +1,11 @@
 package org.learningconcurrency
 package ch2
 
-
-
-
-
-
 object UnsafeUid extends App {
   import scala.annotation.tailrec
-  private val unsafe = scala.concurrent.util.Unsafe.instance
+  private val unsafe         = scala.concurrent.util.Unsafe.instance
   private val uidCountOffset = unsafe.objectFieldOffset(UnsafeUid.getClass.getDeclaredField("uidCount"))
-  @volatile var uidCount = 0L
+  @volatile var uidCount     = 0L
 
   @tailrec def getUniqueId(): Long = {
     val oldUid = uidCount
@@ -31,5 +26,3 @@ object UnsafeUid extends App {
   t.join()
 
 }
-
-

@@ -6,9 +6,9 @@ object Ex3 extends App {
 
   class SyncVar[T] {
 
-    private var empty:Boolean = true
+    private var empty: Boolean = true
 
-    private var x:T = null.asInstanceOf[T]
+    private var x: T = null.asInstanceOf[T]
 
     def get(): T = this.synchronized {
       if (empty) throw new Exception("must be non-empty")
@@ -20,7 +20,7 @@ object Ex3 extends App {
       }
     }
 
-    def put(x: T):Unit = this.synchronized {
+    def put(x: T): Unit = this.synchronized {
       if (!empty) throw new Exception("must be empty")
       else {
         empty = false

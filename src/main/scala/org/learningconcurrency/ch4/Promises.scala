@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch4
 
-
-
-
-
-
 object PromisesCreate extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -13,31 +8,30 @@ object PromisesCreate extends App {
   val p = Promise[String]
   val q = Promise[String]
 
-  p.future foreach {
-    case text => log(s"Promise p succeeded with '$text'")
+  p.future foreach { case text =>
+    log(s"Promise p succeeded with '$text'")
   }
 
   p success "kept"
-  
+
   val secondAttempt = p trySuccess "kept again"
 
   log(s"Second attempt to complete the same promise went well? $secondAttempt")
 
   q failure new Exception("not kept")
 
-  q.future.failed foreach {
-    case t => log(s"Promise q failed with $t")
+  q.future.failed foreach { case t =>
+    log(s"Promise q failed with $t")
   }
 
 }
-
 
 object PromisesCustomAsync extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
   import scala.util.control.NonFatal
 
-  def myFuture[T](body: =>T): Future[T] = {
+  def myFuture[T](body: => T): Future[T] = {
     val p = Promise[T]
 
     global.execute(new Runnable {
@@ -57,12 +51,11 @@ object PromisesCustomAsync extends App {
     "naaa" + "na" * 8 + " Katamari Damacy!"
   }
 
-  future foreach {
-    case text => log(text)
+  future foreach { case text =>
+    log(text)
   }
 
 }
-
 
 object PromisesAndCallbacks extends App {
   import scala.concurrent._
@@ -74,8 +67,8 @@ object PromisesAndCallbacks extends App {
     val p = Promise[String]
 
     val fileMonitor = new FileAlterationMonitor(1000)
-    val observer = new FileAlterationObserver(directory)
-    val listener = new FileAlterationListenerAdaptor {
+    val observer    = new FileAlterationObserver(directory)
+    val listener    = new FileAlterationListenerAdaptor {
       override def onFileCreate(file: File) {
         try p.trySuccess(file.getName)
         finally fileMonitor.stop()
@@ -88,12 +81,11 @@ object PromisesAndCallbacks extends App {
     p.future
   }
 
-  fileCreated(".") foreach {
-    case filename => log(s"Detected new file '$filename'")
+  fileCreated(".") foreach { case filename =>
+    log(s"Detected new file '$filename'")
   }
 
 }
-
 
 object PromisesAndCustomOperations extends App {
   import scala.concurrent._
@@ -110,12 +102,11 @@ object PromisesAndCustomOperations extends App {
 
   val f = Future { "now" } or Future { "later" }
 
-  f foreach {
-    case when => log(s"The future is $when")
+  f foreach { case when =>
+    log(s"The future is $when")
   }
 
 }
-
 
 object PromisesAndTimers extends App {
   import java.util._
@@ -127,9 +118,12 @@ object PromisesAndTimers extends App {
 
   def timeout(millis: Long): Future[Unit] = {
     val p = Promise[Unit]
-    timer.schedule(new TimerTask {
-      def run() = p.success(())
-    }, millis)
+    timer.schedule(
+      new TimerTask {
+        def run() = p.success(())
+      },
+      millis
+    )
     p.future
   }
 
@@ -138,12 +132,11 @@ object PromisesAndTimers extends App {
     "work completed!"
   }
 
-  f foreach {
-    case text => log(text)
+  f foreach { case text =>
+    log(text)
   }
 
 }
-
 
 object PromisesCancellation extends App {
   import scala.concurrent._
@@ -177,5 +170,3 @@ object PromisesCancellation extends App {
 
   log("computation cancelled!")
 }
-
-

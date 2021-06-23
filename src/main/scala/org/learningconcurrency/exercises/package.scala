@@ -1,5 +1,3 @@
 package org.learningconcurrency
 
-
-package object exercises {
-}
+package object exercises {}

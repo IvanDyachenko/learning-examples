@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch3
 
-
-
-
-
-
 object CollectionsBad extends App {
   import scala.collection._
 
@@ -19,7 +14,6 @@ object CollectionsBad extends App {
   add(0 until 10)
   add(10 until 20)
 }
-
 
 /*
 // This example is not in the book.
@@ -41,8 +35,7 @@ object CollectionsSynchronized extends App {
   }
 
 }
-*/
-
+ */
 
 object MiscSyncVars extends App {
   import scala.concurrent._
@@ -67,11 +60,10 @@ object MiscSyncVars extends App {
   log(s"take = ${sv.take(timeout = 1000)}")
 }
 
-
 object MiscDynamicVars extends App {
   import scala.util.DynamicVariable
 
-  val dynlog = new DynamicVariable[String => Unit](log)
+  val dynlog                 = new DynamicVariable[String => Unit](log)
   def secretLog(msg: String) = println(s"(unknown thread): $msg")
 
   execute {
@@ -85,7 +77,6 @@ object MiscDynamicVars extends App {
   dynlog.value("is calling the log method!")
 }
 
-
 object CollectionsIterators extends App {
   import java.util.concurrent._
 
@@ -97,7 +88,6 @@ object CollectionsIterators extends App {
   }
   for (i <- 1 to 5500) queue.poll()
 }
-
 
 object CollectionsConcurrentMap extends App {
   import java.util.concurrent.ConcurrentHashMap
@@ -124,7 +114,6 @@ object CollectionsConcurrentMap extends App {
 
 }
 
-
 object CollectionsConcurrentMapIncremental extends App {
   import java.util.concurrent.ConcurrentHashMap
   import scala.collection._
@@ -137,7 +126,7 @@ object CollectionsConcurrentMapIncremental extends App {
     emails.get(name) match {
       case Some(existing) =>
         if (!emails.replace(name, existing, address :: existing)) addEmail(name, address)
-      case None =>
+      case None           =>
         if (emails.putIfAbsent(name, address :: Nil) != None) addEmail(name, address)
     }
   }
@@ -153,7 +142,6 @@ object CollectionsConcurrentMapIncremental extends App {
   }
 
 }
-
 
 object CollectionsConcurrentMapBulk extends App {
   import scala.collection._
@@ -175,7 +163,6 @@ object CollectionsConcurrentMapBulk extends App {
 
 }
 
-
 object CollectionsTrieMapBulk extends App {
   import scala.collection._
 
@@ -194,8 +181,3 @@ object CollectionsTrieMapBulk extends App {
   }
 
 }
-
-
-
-
-

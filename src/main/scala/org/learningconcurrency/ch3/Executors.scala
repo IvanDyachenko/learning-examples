@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch3
 
-
-
-
-
-
 object ExecutorsCreate extends App {
   import scala.concurrent._
   val executor = new java.util.concurrent.ForkJoinPool
@@ -16,7 +11,6 @@ object ExecutorsCreate extends App {
   Thread.sleep(500)
 }
 
-
 object ExecutionContextGlobal extends App {
   import scala.concurrent._
   val ectx = ExecutionContext.global
@@ -24,7 +18,6 @@ object ExecutionContextGlobal extends App {
     def run() = log("Running on the execution context.")
   })
 }
-
 
 object ExecutionContextCreate extends App {
   import scala.concurrent._
@@ -34,7 +27,6 @@ object ExecutionContextCreate extends App {
   })
 }
 
-
 object ExecutionContextSleep extends App {
   import scala.concurrent._
   for (i <- 0 until 32) execute {
@@ -43,5 +35,3 @@ object ExecutionContextSleep extends App {
   }
   Thread.sleep(10000)
 }
-
-

@@ -1,21 +1,15 @@
 package org.learningconcurrency
 package ch3
 
-
-
-
-
-
 object ProcessRun extends App {
   import scala.sys.process._
 
-  val command = "ls"
+  val command  = "ls"
   val exitcode = command.!
 
   log(s"command exited with status $exitcode")
-  
-}
 
+}
 
 object ProcessLineCount extends App {
   import scala.sys.process._
@@ -30,7 +24,6 @@ object ProcessLineCount extends App {
   log(s"File build.sbt has $lc lines.")
 }
 
-
 object ProcessAsync extends App {
   import scala.sys.process._
   val lsProcess = "ls -R /".run()
@@ -38,7 +31,6 @@ object ProcessAsync extends App {
   log("Timeout - killing ls!")
   lsProcess.destroy()
 }
-
 
 object ProcessList extends App {
   import scala.sys.process._
@@ -52,14 +44,13 @@ object ProcessList extends App {
   }
 
   val currprocs = processes()
-  val jvms = currprocs.filter(_._2.contains("java"))
+  val jvms      = currprocs.filter(_._2.contains("java"))
   log(s"listing currently running JVM instances...")
   for (jvm <- jvms) {
     log(s"${jvm._1} ${jvm._2}")
   }
 
 }
-
 
 object ProcessFiles extends App {
   import scala.sys.process._
@@ -68,7 +59,6 @@ object ProcessFiles extends App {
 
   for (file <- files("scala")) log(s"found - $file")
 }
-
 
 object ProcessPipelining extends App {
   import scala.sys.process._
@@ -89,5 +79,3 @@ object ProcessPipelining extends App {
   }
 
 }
-
-

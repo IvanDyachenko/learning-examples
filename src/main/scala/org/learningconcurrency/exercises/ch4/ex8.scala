@@ -2,17 +2,15 @@ package org.learningconcurrency
 package exercises
 package ch4
 
-/**
- * Extend the Promise[T] type with the compose method,
- * which takes a function of the S => T type, and returns a Promise[S] object:
- *
- * def compose[S](f: S => T): Promise[S]
- *
- * Whenever the resulting promise is completed with some value x of the type S (or failed),
- * the original promise must be completed with the value f(x) asynchronously (or failed),
- * unless the original promise is already completed.
- *
- */
+/** Extend the Promise[T] type with the compose method,
+  * which takes a function of the S => T type, and returns a Promise[S] object:
+  *
+  * def compose[S](f: S => T): Promise[S]
+  *
+  * Whenever the resulting promise is completed with some value x of the type S (or failed),
+  * the original promise must be completed with the value f(x) asynchronously (or failed),
+  * unless the original promise is already completed.
+  */
 
 object Ex8 extends App {
 
@@ -36,7 +34,7 @@ object Ex8 extends App {
   }
 
   //test
-  val pT = Promise[String]
+  val pT               = Promise[String]
   val pS: Promise[Int] = pT.compose((s) => s"val = $s")
 
   Future {
@@ -45,14 +43,11 @@ object Ex8 extends App {
     //    pS.failure(new Exception)
   }
 
-
-
-  pT.future foreach {
-    case s => log(s)
+  pT.future foreach { case s =>
+    log(s)
   }
 
   pT.future.failed foreach { case t => log(s"q failed with $t") }
-
 
   Thread.sleep(2000)
 

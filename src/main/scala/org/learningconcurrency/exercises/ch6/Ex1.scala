@@ -2,8 +2,7 @@ package org.learningconcurrency
 package exercises
 package ch6
 
-/**
-  * Implement a custom Observable[Thread] object that emits an event when it detects that a thread was started.
+/** Implement a custom Observable[Thread] object that emits an event when it detects that a thread was started.
   * The implementation is allowed to miss some of the events.
   */
 
@@ -21,21 +20,21 @@ object Ex1 extends App {
   var existsThreads = Set.empty[Thread]
 
   @tailrec
-  def getRootThread(t: ThreadGroup):ThreadGroup = {
+  def getRootThread(t: ThreadGroup): ThreadGroup = {
     val parent = t.getParent
     if (parent == null) t else getRootThread(parent)
   }
 
   def getCurrentThreads = {
     val threads = new Array[Thread](rootThreadGroup.activeCount())
-    rootThreadGroup.enumerate(threads,true)
+    rootThreadGroup.enumerate(threads, true)
 
     threads.filter(_ != null)
   }
 
   def getNewThreads = {
     val currentThreads = getCurrentThreads
-    val newThreads = currentThreads.filter(!existsThreads.contains(_))
+    val newThreads     = currentThreads.filter(!existsThreads.contains(_))
 
     //save threads
     existsThreads = currentThreads.toSet
@@ -44,8 +43,8 @@ object Ex1 extends App {
   }
 
   def createObservableNewThreads: Observable[Thread] = {
-    Observable[Thread] {
-      (s) => {
+    Observable[Thread] { (s) =>
+      {
         getNewThreads.foreach(s.onNext _)
       }
     }
@@ -61,7 +60,7 @@ object Ex1 extends App {
 
   //test
 
-  def createTestThread(name:String): Unit = {
+  def createTestThread(name: String): Unit = {
     val t = new Thread(name) {
       override def run(): Unit = {
         Thread.sleep(5000)

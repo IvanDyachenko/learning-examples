@@ -64,6 +64,4 @@ object Ex4 extends App {
   producer.join()
   consumer.join()
 
-
-
 }

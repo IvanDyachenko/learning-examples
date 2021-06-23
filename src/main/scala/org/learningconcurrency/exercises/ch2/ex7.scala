@@ -33,7 +33,6 @@ object Ex7 extends App {
     }
   }
 
-
   def sendAll(accounts: Set[Account], target: Account): Unit = {
 
     def adjust() = {
@@ -41,24 +40,24 @@ object Ex7 extends App {
         val money = a.money
         a.money = 0
         s + money
-      }
-      )
+      })
     }
 
     def sendAllWithSynchronize(la: List[Account]): Unit = la match {
-      case h :: t => h synchronized {
-        sendAllWithSynchronize(t)
-      }
-      case _ => adjust()
+      case h :: t =>
+        h synchronized {
+          sendAllWithSynchronize(t)
+        }
+      case _      => adjust()
     }
 
     sendAllWithSynchronize((target :: accounts.toList).sortBy(_.uid))
   }
 
-  val accounts = (1 to 100).map((i) => new Account(s"Account: $i",i*10)).toSet
-  val target = new Account("Target account", 0)
+  val accounts = (1 to 100).map((i) => new Account(s"Account: $i", i * 10)).toSet
+  val target   = new Account("Target account", 0)
 
-  sendAll(accounts,target)
+  sendAll(accounts, target)
 
   accounts.foreach((a) => log(s"${a.name}, money = ${a.money}"))
   log(s"${target.name} - money = ${target.money}")

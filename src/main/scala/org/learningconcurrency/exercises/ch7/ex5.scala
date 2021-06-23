@@ -2,8 +2,7 @@ package org.learningconcurrency
 package exercises
 package ch7
 
-/**
-  * Implement a transactional First In First Out (FIFO) queue,
+/** Implement a transactional First In First Out (FIFO) queue,
   * represented with the TQueue class:
   *
   * class TQueue[T] {
@@ -31,8 +30,8 @@ object Ex5 extends App {
 
     def dequeue()(implicit txn: InTxn): T = {
       r().dequeueOption match {
-        case None => retry
-        case Some((x,q)) => {
+        case None         => retry
+        case Some((x, q)) => {
           r() = q
           x
         }
@@ -47,10 +46,10 @@ object Ex5 extends App {
 
   l.map { i =>
     Future {
-      atomic {implicit txn =>
+      atomic { implicit txn =>
         val x = tQueue.dequeue
 
-        Txn.afterCommit{_ =>
+        Txn.afterCommit { _ =>
           log(s"dequeu: $x")
         }
       }
@@ -59,7 +58,7 @@ object Ex5 extends App {
 
   l.map { i =>
     Future {
-      atomic {implicit txn =>
+      atomic { implicit txn =>
         tQueue.enqueue(i)
 
         Txn.afterCommit { _ =>

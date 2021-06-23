@@ -8,7 +8,6 @@ object Ex1a extends App {
 
 }
 
-
 object Ex1b extends App {
 
   def compose[A, B, C](g: B => C, f: A => B): A => C = g compose f

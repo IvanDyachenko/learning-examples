@@ -5,17 +5,16 @@ package ch4
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 
-/**
- * Implement a command-line program that asks the user to input a URL of some website,
- * and displays the HTML of that website.
- *
- * Between the time that the user hits ENTER and the time that the HTML is retrieved,
- * the program should repetitively print a . to the standard output every 50 milliseconds,
- * with a two seconds timeout.
- *
- * Use only futures and promises, and avoid the synchronization primitives from the previous chapters.
- * You may reuse the timeout method defined in this chapter.
- */
+/** Implement a command-line program that asks the user to input a URL of some website,
+  * and displays the HTML of that website.
+  *
+  * Between the time that the user hits ENTER and the time that the HTML is retrieved,
+  * the program should repetitively print a . to the standard output every 50 milliseconds,
+  * with a two seconds timeout.
+  *
+  * Use only futures and promises, and avoid the synchronization primitives from the previous chapters.
+  * You may reuse the timeout method defined in this chapter.
+  */
 
 object Ex1 extends App {
 
@@ -27,7 +26,7 @@ object Ex1 extends App {
 
   private val timer = new Timer(true)
 
-  def stopTimer(t:Timer) = {
+  def stopTimer(t: Timer) = {
     t.cancel()
     t.purge()
   }
@@ -38,15 +37,18 @@ object Ex1 extends App {
         def run() = {
           p trySuccess (s"Sorry, timed out ($t ms)")
         }
-      }, t
+      },
+      t
     )
   }
 
-  def timeOutPrinter(t:Timer): Unit = {
+  def timeOutPrinter(t: Timer): Unit = {
     t.schedule(
       new TimerTask {
         override def run(): Unit = print(".")
-      },0,50
+      },
+      0,
+      50
     )
   }
 

@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch3
 
-
-
-
-
-
 object AtomicUid extends App {
   import java.util.concurrent.atomic._
   private val uid = new AtomicLong(0L)
@@ -18,7 +13,6 @@ object AtomicUid extends App {
 
   log(s"Got a unique id: ${getUniqueId()}")
 }
-
 
 object AtomicUidCAS extends App {
   import java.util.concurrent.atomic._
@@ -39,11 +33,10 @@ object AtomicUidCAS extends App {
   log(s"Got a unique id: $getUniqueId")
 }
 
-
 object AtomicLock extends App {
   import java.util.concurrent.atomic._
   private val lock = new AtomicBoolean(false)
-  def mySynchronized(body: =>Unit): Unit = {
+  def mySynchronized(body: => Unit): Unit = {
     while (!lock.compareAndSet(false, true)) {}
     try body
     finally lock.set(false)
@@ -57,7 +50,6 @@ object AtomicLock extends App {
   log(s"Count is: $count")
 }
 
-
 object AtomicStack {
   import java.util.concurrent.atomic._
   import scala.concurrent._
@@ -65,7 +57,7 @@ object AtomicStack {
 
   trait Stack
   case class Node(head: Int, tail: Stack) extends Stack
-  case object Bottom extends Stack
+  case object Bottom                      extends Stack
 
   private val stack = new AtomicReference[Stack](Bottom)
   @tailrec def push(x: Int) {
@@ -75,7 +67,7 @@ object AtomicStack {
   }
   @tailrec def pop(): Option[Int] = {
     stack.get() match {
-      case Bottom => None
+      case Bottom                      => None
       case oldTop @ Node(head, newTop) =>
         if (stack.compareAndSet(oldTop, newTop)) Some(head)
         else pop()
@@ -88,16 +80,16 @@ object AtomicStack {
         pop() match {
           case Some(-1) =>
             log("Got -1. Done!")
-          case Some(x) =>
+          case Some(x)  =>
             log(s"Got $x")
             poll()
-          case None =>
+          case None     =>
             poll()
         }
       }
       poll()
     }
-  
+
     push(1)
     push(2)
     push(3)
@@ -106,7 +98,6 @@ object AtomicStack {
   }
 
 }
-
 
 object AtomicArrays extends App {
   import java.util.concurrent.atomic._
@@ -127,7 +118,3 @@ object AtomicArrays extends App {
   log(s"Count lower bound: ${lowerBound()}")
   log(s"Count lower bound: ${lowerBound()}")
 }
-
-
-
-

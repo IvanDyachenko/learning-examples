@@ -11,12 +11,11 @@ import java.util.regex.Pattern
 
 import scala.sys.process._
 
-/**
- * Implement a method spawn that, given a block of Scala code, starts a new JVM process and runs the specified block in the new process:
- * def spawn[T](block: =>T): T = ???
- * Once the block returns a value, the spawn method should return the value from the child process.
- * If the block throws an exception, the spawn method should throw the same exception.
- */
+/** Implement a method spawn that, given a block of Scala code, starts a new JVM process and runs the specified block in the new process:
+  * def spawn[T](block: =>T): T = ???
+  * Once the block returns a value, the spawn method should return the value from the child process.
+  * If the block throws an exception, the spawn method should throw the same exception.
+  */
 object Ex8 extends App {
 
   // This method's preconditions are the following:
@@ -25,7 +24,7 @@ object Ex8 extends App {
   // If passed block which contains `System.exit`, this method throws `SecurityException`.
   def spawn[T](block: => T): T = {
     val className = Ex8_EvaluationApp.getClass().getName().split((Pattern.quote("$")))(0)
-    val tmp = File.createTempFile("concurrent-programming-in-scala", null)
+    val tmp       = File.createTempFile("concurrent-programming-in-scala", null)
     tmp.deleteOnExit()
 
     val out = new ObjectOutputStream(new FileOutputStream(tmp))
@@ -43,7 +42,7 @@ object Ex8 extends App {
     try {
       in.readObject() match {
         case e: Throwable => throw e
-        case x => x.asInstanceOf[T]
+        case x            => x.asInstanceOf[T]
       }
     } finally {
       in.close()
@@ -62,7 +61,7 @@ object Ex8 extends App {
     })
   } catch {
     case e: NumberFormatException =>
-    case _: Throwable => assert(false)
+    case _: Throwable             => assert(false)
   }
 
   try {
@@ -71,6 +70,6 @@ object Ex8 extends App {
     })
   } catch {
     case e: SecurityException =>
-    case _: Throwable => assert(false)
+    case _: Throwable         => assert(false)
   }
 }

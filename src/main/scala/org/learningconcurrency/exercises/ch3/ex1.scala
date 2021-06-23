@@ -2,13 +2,11 @@ package org.learningconcurrency
 package exercises
 package ch3
 
-
-/**
- * Implement a custom ExecutionContext class called PiggybackContext,
- * which executes Runnable objects on the same thread that calls execute.
- * Ensure that a Runnable object executing on the PiggybackContext
- * can also call execute and that exceptions are properly reported.
- */
+/** Implement a custom ExecutionContext class called PiggybackContext,
+  * which executes Runnable objects on the same thread that calls execute.
+  * Ensure that a Runnable object executing on the PiggybackContext
+  * can also call execute and that exceptions are properly reported.
+  */
 
 import scala.util.{Failure, Success, Try}
 
@@ -42,8 +40,5 @@ object Ex1 extends App {
       log("run")
     }
   })
-
-
-
 
 }

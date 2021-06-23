@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch5
 
-
-
-
-
-
 object ParBasic extends App {
   import scala.collection._
 
@@ -26,7 +21,6 @@ object ParBasic extends App {
   log(s"Parallel time $partime ms")
 }
 
-
 object ParUid extends App {
   import scala.collection._
   import java.util.concurrent.atomic._
@@ -44,7 +38,6 @@ object ParUid extends App {
 
 }
 
-
 object ParGeneric extends App {
   import scala.collection._
   import scala.io.Source
@@ -61,23 +54,21 @@ object ParGeneric extends App {
 
 }
 
-
 object ParConfig extends App {
   import scala.collection._
   import scala.concurrent.forkjoin.ForkJoinPool
 
-  val fjpool = new ForkJoinPool(2)
+  val fjpool        = new ForkJoinPool(2)
   val myTaskSupport = new parallel.ForkJoinTaskSupport(fjpool)
-  val numbers = scala.util.Random.shuffle(Vector.tabulate(5000000)(i => i))
-  val partime = timed {
+  val numbers       = scala.util.Random.shuffle(Vector.tabulate(5000000)(i => i))
+  val partime       = timed {
     val parnumbers = numbers.par
     parnumbers.tasksupport = myTaskSupport
-    val n = parnumbers.max
+    val n          = parnumbers.max
     println(s"largest number $n")
   }
-  log(s"Parallel time $partime ms")  
+  log(s"Parallel time $partime ms")
 }
-
 
 object ParHtmlSpecSearch extends App {
   import scala.concurrent._
@@ -87,7 +78,8 @@ object ParHtmlSpecSearch extends App {
 
   def getHtmlSpec() = Future {
     val specSrc: Source = Source.fromURL("http://www.w3.org/MarkUp/html-spec/html-spec.txt")
-    try specSrc.getLines.toArray finally specSrc.close()
+    try specSrc.getLines.toArray
+    finally specSrc.close()
   }
 
   getHtmlSpec() foreach { case specDoc =>
@@ -106,16 +98,14 @@ object ParHtmlSpecSearch extends App {
 
 }
 
-
 object ParNonParallelizableCollections extends App {
   import scala.collection._
 
-  val list = List.fill(1000000)("")
+  val list   = List.fill(1000000)("")
   val vector = Vector.fill(1000000)("")
   log(s"list conversion time: ${timed(list.par)} ms")
   log(s"vector conversion time: ${timed(vector.par)} ms")
 }
-
 
 object ParNonParallelizableOperations extends App {
   import scala.collection._
@@ -136,7 +126,6 @@ object ParNonParallelizableOperations extends App {
   }
 }
 
-
 object ParNonDeterministicOperation extends App {
   import scala.collection._
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -150,10 +139,9 @@ object ParNonDeterministicOperation extends App {
   }
 }
 
-
 object ParNonCommutativeOperator extends App {
   import scala.collection._
-  
+
   val doc = mutable.ArrayBuffer.tabulate(20)(i => s"Page $i, ")
   def test(doc: GenIterable[String]) {
     val seqtext = doc.seq.reduceLeft(_ + _)
@@ -164,7 +152,6 @@ object ParNonCommutativeOperator extends App {
   test(doc)
   test(doc.toSet)
 }
-
 
 object ParNonAssociativeOperator extends App {
   import scala.collection._
@@ -177,7 +164,6 @@ object ParNonAssociativeOperator extends App {
   }
   test(0 until 30)
 }
-
 
 object ParMultipleOperators extends App {
   import scala.collection._
@@ -193,7 +179,6 @@ object ParMultipleOperators extends App {
   }
 }
 
-
 object ParSideEffectsIncorrect extends App {
   import scala.collection._
 
@@ -207,7 +192,6 @@ object ParSideEffectsIncorrect extends App {
   log(s"Sequential result - $seqres")
   log(s"Parallel result   - $parres")
 }
-
 
 object ParSideEffectsCorrect extends App {
   import scala.collection._
@@ -224,7 +208,6 @@ object ParSideEffectsCorrect extends App {
   log(s"Parallel result   - $parres")
 }
 
-
 object ParMutableWrong extends App {
   import scala.collection._
 
@@ -232,9 +215,3 @@ object ParMutableWrong extends App {
   for (x <- buffer.par) buffer += x
   log(buffer.toString)
 }
-
-
-
-
-
-

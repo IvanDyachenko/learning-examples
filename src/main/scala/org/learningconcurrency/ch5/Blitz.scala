@@ -1,22 +1,18 @@
 package org.learningconcurrency
 package ch5
 
-
-
 import scala.collection._
 import scala.collection.par._
 import scala.collection.par.Scheduler.Implicits.global
 
-
-
 object BlitzComparison extends App {
-  val array = (0 until 100000).toArray
+  val array       = (0 until 100000).toArray
   @volatile var x = 0
 
-  val seqtime = warmedTimed(1000) {
+  val seqtime   = warmedTimed(1000) {
     array.reduce(_ + _)
   }
-  val partime = warmedTimed(1000) {
+  val partime   = warmedTimed(1000) {
     array.par.reduce(_ + _)
   }
   val blitztime = warmedTimed(1000) {
@@ -27,7 +23,6 @@ object BlitzComparison extends App {
   log(s"parallel time   - $partime")
   log(s"ScalaBlitz time - $blitztime")
 }
-
 
 object BlitzHierarchy extends App {
   val array = (0 until 100000).toArray
@@ -42,6 +37,3 @@ object BlitzHierarchy extends App {
   println(sum(range.toPar))
 
 }
-
-
-

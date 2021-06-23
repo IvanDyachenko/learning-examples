@@ -6,17 +6,17 @@ import scala.collection.mutable
 
 object Ex10 extends App {
 
-  class PriorityTaskPool(val p:Int, val important: Int) {
+  class PriorityTaskPool(val p: Int, val important: Int) {
 
-    implicit val ord: Ordering[(Int,() => Unit)] = Ordering.by(_._1)
+    implicit val ord: Ordering[(Int, () => Unit)] = Ordering.by(_._1)
 
-    private val tasks = mutable.PriorityQueue[(Int,() => Unit)]()
+    private val tasks = mutable.PriorityQueue[(Int, () => Unit)]()
 
     @volatile
     private var terminated = false
 
-    def asynchronous(priority: Int)(task: => Unit):Unit = tasks synchronized {
-      tasks.enqueue((priority,() => task))
+    def asynchronous(priority: Int)(task: => Unit): Unit = tasks synchronized {
+      tasks.enqueue((priority, () => task))
       tasks.notify()
     }
 
@@ -26,7 +26,7 @@ object Ex10 extends App {
         while (tasks.isEmpty) {
           tasks.wait()
         }
-        log(s"queue: " + tasks.foldLeft("")((s,t)=>s"$s${t._1},"))
+        log(s"queue: " + tasks.foldLeft("")((s, t) => s"$s${t._1},"))
         tasks.dequeue()
       }
 
@@ -34,7 +34,7 @@ object Ex10 extends App {
         while (true) {
           poll() match {
             case (p, task) if (p > important) || (!terminated) => task()
-            case _  =>
+            case _                                             =>
           }
         }
       }
@@ -52,8 +52,8 @@ object Ex10 extends App {
   val tasks = new PriorityTaskPool(10, 300)
 
   (1 to 1000).foreach((i) => {
-    val a = (Math.random*1000).toInt
-    tasks.asynchronous(a)({log(s"<- $a")})
+    val a = (Math.random * 1000).toInt
+    tasks.asynchronous(a)({ log(s"<- $a") })
   })
 
   Thread.sleep(1)

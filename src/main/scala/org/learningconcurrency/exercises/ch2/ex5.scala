@@ -18,7 +18,7 @@ object Ex5 extends App {
       !empty
     }
 
-    def getWait():T = this.synchronized {
+    def getWait(): T = this.synchronized {
       while (empty)
         this.wait()
 
@@ -36,7 +36,6 @@ object Ex5 extends App {
       this.notify()
     }
 
-
   }
 
   import org.learningconcurrency.ch2.thread
@@ -45,7 +44,7 @@ object Ex5 extends App {
 
   val producer = thread {
     var x = 0
-    while(x < 15) {
+    while (x < 15) {
       syncVar.putWait(x)
       x = x + 1
     }
@@ -53,7 +52,7 @@ object Ex5 extends App {
 
   val consumer = thread {
     var x = -1
-    while(x < 14) {
+    while (x < 14) {
       x = syncVar.getWait
       log(s"get: $x")
     }

@@ -2,8 +2,7 @@ package org.learningconcurrency
 package exercises
 package ch6
 
-/**
-  * Implement an Observable object that emits an event every 5 seconds and every 12 seconds,
+/** Implement an Observable object that emits an event every 5 seconds and every 12 seconds,
   * but not if the elapsed time is a multiple of 30 seconds.
   * Use functional combinators on Observable objects.
   */

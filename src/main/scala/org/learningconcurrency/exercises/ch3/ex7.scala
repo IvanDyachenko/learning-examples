@@ -4,10 +4,9 @@ package ch3
 
 import scala.collection._
 
-/**
- * Implement a SyncConcurrentMap class that extends the Map interface from the scala.collection.concurrent package.
- * Use the synchronized statement to protect the state of the concurrent map.
- */
+/** Implement a SyncConcurrentMap class that extends the Map interface from the scala.collection.concurrent package.
+  * Use the synchronized statement to protect the state of the concurrent map.
+  */
 
 object Ex7 extends App {
 
@@ -17,29 +16,31 @@ object Ex7 extends App {
 
     override def putIfAbsent(k: A, v: B): Option[B] = m synchronized {
       m.get(k) match {
-        case optV@Some(_) => optV
-        case None => m.put(k, v)
+        case optV @ Some(_) => optV
+        case None           => m.put(k, v)
       }
     }
 
     def replace(k: A, oldvalue: B, newvalue: B): Boolean = m synchronized {
       m.get(k) match {
-        case Some(v) if ((v != null) && v.equals(oldvalue)) || ((v == null) && (oldvalue == null)) => m.put(k, newvalue); true
-        case _ => false
+        case Some(v) if ((v != null) && v.equals(oldvalue)) || ((v == null) && (oldvalue == null)) =>
+          m.put(k, newvalue); true
+        case _                                                                                     => false
       }
     }
 
     def remove(k: A, v: B): Boolean = m synchronized {
       m.get(k) match {
-        case Some(oldvalue) if ((oldvalue != null) && oldvalue.equals(v)) || ((v == null) && (oldvalue == null)) => m.remove(k); true
-        case _ => false
+        case Some(oldvalue) if ((oldvalue != null) && oldvalue.equals(v)) || ((v == null) && (oldvalue == null)) =>
+          m.remove(k); true
+        case _                                                                                                   => false
       }
     }
 
     override def replace(k: A, v: B): Option[B] = m synchronized {
       m.get(k) match {
-        case old@Some(oldvalue) => m.put(k, v); old
-        case None => None
+        case old @ Some(oldvalue) => m.put(k, v); old
+        case None                 => None
       }
 
     }
@@ -65,18 +66,19 @@ object Ex7 extends App {
 
   val m = new SyncConcurrentMap[Int, String]()
 
-
   import org.learningconcurrency.ch2.thread
 
-  val t = (1 to 100).map((i) => thread {
-    (1 to 100).foreach {
-      (k) => {
-        val v = s"${Thread.currentThread().getName}"
-        m.put(k, v)
-        log(s"-> ($k,$v)")
+  val t = (1 to 100).map((i) =>
+    thread {
+      (1 to 100).foreach { (k) =>
+        {
+          val v = s"${Thread.currentThread().getName}"
+          m.put(k, v)
+          log(s"-> ($k,$v)")
+        }
       }
     }
-  })
+  )
 
   Thread.sleep(100)
 

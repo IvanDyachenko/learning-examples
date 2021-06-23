@@ -2,8 +2,7 @@ package org.learningconcurrency
 package exercises
 package ch7
 
-/**
-  * Use ScalaSTM to implement the mutable location abstraction from Haskell,
+/** Use ScalaSTM to implement the mutable location abstraction from Haskell,
   * represented with the MVar class:
   *
   * class MVar[T] {
@@ -26,7 +25,6 @@ package ch7
   * Concurrency on the JVM and the Java Memory Model.
   * Is it possible to implement the swap method for SyncVar objects
   * without modifying the internal implementation of the SyncVar class?
-  *
   */
 object Ex2 extends App {
 
@@ -41,7 +39,7 @@ object Ex2 extends App {
 
     def put(x: T)(implicit txn: InTxn): Unit = rx() match {
       case Some(_) => retry
-      case None => rx() = Some(x)
+      case None    => rx() = Some(x)
     }
 
     def take()(implicit txn: InTxn): T = rx() match {
@@ -49,7 +47,7 @@ object Ex2 extends App {
         rx() = None
         x
       }
-      case None => retry
+      case None    => retry
     }
   }
 
@@ -64,9 +62,9 @@ object Ex2 extends App {
 
   val l = 1 to 1001
 
-  l.map(
-    i => Future {
-      atomic {implicit txn =>
+  l.map(i =>
+    Future {
+      atomic { implicit txn =>
         mVar.put(i)
       }
     }
@@ -74,9 +72,9 @@ object Ex2 extends App {
 
   val sum = new AtomicInteger(0)
 
-  l.map(
-    i => Future {
-      atomic {implicit txn =>
+  l.map(i =>
+    Future {
+      atomic { implicit txn =>
         val i = mVar.take
         Txn.afterCommit(_ => sum.addAndGet(i))
       }
@@ -94,14 +92,14 @@ object Ex2 extends App {
 
   val mva = new MVar[String]
   val mvb = new MVar[String]
-  atomic {implicit txn =>
+  atomic { implicit txn =>
     mva.put("a")
     mvb.put("b")
   }
 
   l.map(i =>
-    Future{
-      atomic {implicit txn =>
+    Future {
+      atomic { implicit txn =>
         swap(mva, mvb)
       }
     }
@@ -109,10 +107,10 @@ object Ex2 extends App {
 
   Thread.sleep(5000)
 
-  atomic {implicit txn =>
+  atomic { implicit txn =>
     val a = mva.take
     val b = mvb.take
 
-    Txn.afterCommit( _ =>  log(s"a= $a, b = $b"))
+    Txn.afterCommit(_ => log(s"a= $a, b = $b"))
   }
 }

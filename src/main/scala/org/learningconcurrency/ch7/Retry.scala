@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch7
 
-
-
-
-
-
 object RetryHeadWaitBad extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -27,7 +22,6 @@ object RetryHeadWaitBad extends App {
   Future { myList.insert(1) }
 
 }
-
 
 object RetryHeadWait extends App {
   import scala.concurrent._
@@ -51,7 +45,6 @@ object RetryHeadWait extends App {
   Future { myList.insert(1) }
 
 }
-
 
 object RetryChaining extends App {
   import scala.concurrent._
@@ -81,7 +74,6 @@ object RetryChaining extends App {
 
 }
 
-
 object RetryTimeouts extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -96,8 +88,8 @@ object RetryTimeouts extends App {
         else retry
       }
     }
-  } foreach {
-    case msg => log(msg)
+  } foreach { case msg =>
+    log(msg)
   }
 
   Thread.sleep(1025)
@@ -107,7 +99,6 @@ object RetryTimeouts extends App {
   }
 
 }
-
 
 object RetryFor extends App {
   import scala.concurrent._
@@ -132,9 +123,3 @@ object RetryFor extends App {
   message.single() = "Howdy!"
 
 }
-
-
-
-
-
-

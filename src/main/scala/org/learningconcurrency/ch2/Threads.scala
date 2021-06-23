@@ -1,16 +1,10 @@
 package org.learningconcurrency
 package ch2
 
-
-
-
-
-
 object ThreadsMain extends App {
   val name = Thread.currentThread.getName
   println(s"I am the thread $name")
 }
-
 
 object ThreadsStart extends App {
   class MyThread extends Thread {
@@ -23,7 +17,6 @@ object ThreadsStart extends App {
   t.start()
   println(s"I am ${Thread.currentThread.getName}")
 }
-
 
 object ThreadsCreation extends App {
 
@@ -40,7 +33,6 @@ object ThreadsCreation extends App {
 
 }
 
-
 object ThreadsSleep extends App {
 
   val t = thread {
@@ -56,7 +48,6 @@ object ThreadsSleep extends App {
 
 }
 
-
 object ThreadsNondeterminism extends App {
 
   val t = thread { log("New thread running.") }
@@ -67,14 +58,12 @@ object ThreadsNondeterminism extends App {
 
 }
 
-
 object ThreadsCommunicate extends App {
   var result: String = null
-  val t = thread { result = "\nTitle\n" + "=" * 5 }
+  val t              = thread { result = "\nTitle\n" + "=" * 5 }
   t.join()
   log(result)
 }
-
 
 object ThreadsUnprotectedUid extends App {
 
@@ -99,7 +88,6 @@ object ThreadsUnprotectedUid extends App {
 
 }
 
-
 object ThreadSharedStateAccessReordering extends App {
   for (i <- 0 until 100000) {
     var a = false
@@ -117,25 +105,9 @@ object ThreadSharedStateAccessReordering extends App {
       b = true
       x = if (a) 0 else 1
     }
-  
+
     t1.join()
     t2.join()
     assert(!(x == 1 && y == 1), s"x = $x, y = $y")
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

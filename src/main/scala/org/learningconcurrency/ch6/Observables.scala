@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch6
 
-
-
-
-
-
 object ObservablesItems extends App {
   import rx.lang.scala._
 
@@ -15,7 +10,6 @@ object ObservablesItems extends App {
 
 }
 
-
 object ObservablesTimer extends App {
   import rx.lang.scala._
   import scala.concurrent.duration._
@@ -24,7 +18,6 @@ object ObservablesTimer extends App {
   o.subscribe(_ => log(s"Timeout!"))
   o.subscribe(_ => log(s"Another timeout!"))
 }
-
 
 object ObservablesExceptions extends App {
   import rx.lang.scala._
@@ -36,20 +29,18 @@ object ObservablesExceptions extends App {
   )
 }
 
-
 object ObservablesLifetime extends App {
   import rx.lang.scala._
 
   val classics = List("Il buono, il brutto, il cattivo.", "Back to the future", "Die Hard")
-  val o = Observable.from(classics)
+  val o        = Observable.from(classics)
 
   o.subscribe(new Observer[String] {
-    override def onNext(m: String) = log(s"Movies Watchlist - $m")
+    override def onNext(m: String)     = log(s"Movies Watchlist - $m")
     override def onError(e: Throwable) = log(s"Ooops - $e!")
-    override def onCompleted() = log(s"No more movies.")
+    override def onCompleted()         = log(s"No more movies.")
   })
 }
-
 
 object ObservablesCreate extends App {
   import rx.lang.scala._
@@ -68,7 +59,6 @@ object ObservablesCreate extends App {
 
 }
 
-
 object ObservablesCreateFuture extends App {
   import rx.lang.scala._
   import scala.concurrent._
@@ -80,13 +70,12 @@ object ObservablesCreateFuture extends App {
   }
 
   val o = Observable.apply[String] { obs =>
-    f foreach {
-      case s =>
-        obs.onNext(s)
-        obs.onCompleted()
+    f foreach { case s =>
+      obs.onNext(s)
+      obs.onCompleted()
     }
-    f.failed foreach {
-      case t => obs.onError(t)
+    f.failed foreach { case t =>
+      obs.onError(t)
     }
     Subscription()
   }
@@ -94,7 +83,6 @@ object ObservablesCreateFuture extends App {
   o.subscribe(log _)
 
 }
-
 
 object ObservablesFromFuture extends App {
   import rx.lang.scala._
@@ -109,18 +97,16 @@ object ObservablesFromFuture extends App {
   o.subscribe(log _)
 }
 
-
 object ObservablesCombinators extends App {
   import rx.lang.scala._
 
-  val roles = Observable.items("The Good", "The Bad", "The Ugly")
-  val names = Observable.items("Clint Eastwood", "Lee Van Cleef", "Eli Wallach")
+  val roles  = Observable.items("The Good", "The Bad", "The Ugly")
+  val names  = Observable.items("Clint Eastwood", "Lee Van Cleef", "Eli Wallach")
   val zipped = names.zip(roles).map { case (name, role) => s"$name - $role" }
 
   zipped.subscribe(log _)
 
 }
-
 
 object ObservablesSubscriptions extends App {
   import rx.lang.scala._
@@ -129,8 +115,8 @@ object ObservablesSubscriptions extends App {
   def modifiedFiles(directory: String): Observable[String] = {
     Observable.apply { observer =>
       val fileMonitor = new FileAlterationMonitor(1000)
-      val fileObs = new FileAlterationObserver(directory)
-      val fileLis = new FileAlterationListenerAdaptor {
+      val fileObs     = new FileAlterationObserver(directory)
+      val fileLis     = new FileAlterationListenerAdaptor {
         override def onFileChange(file: java.io.File) {
           observer.onNext(file.getName)
         }
@@ -153,7 +139,6 @@ object ObservablesSubscriptions extends App {
   log(s"monitoring done")
 
 }
-
 
 object ObservablesHot extends App {
   import rx.lang.scala._
@@ -196,27 +181,26 @@ object ObservablesHot extends App {
 
 }
 
-
 object ObservablesHotVsCold extends App {
   import java.util.{Timer, TimerTask}
   import scala.collection._
   import rx.lang.scala._
 
-  val songs = List("Eye of the Tiger", "You Spin Me Round", "Rebel Yell")
+  val songs      = List("Eye of the Tiger", "You Spin Me Round", "Rebel Yell")
   val myPlaylist = Observable.from(songs)
 
   object Player extends TimerTask {
-    val timer = new Timer
-    var index = 0
+    val timer       = new Timer
+    var index       = 0
     var subscribers = mutable.Set[Subscriber[String]]()
-    def start() = timer.schedule(this, 0L, 1000L)
-    def stop() = timer.cancel()
+    def start()     = timer.schedule(this, 0L, 1000L)
+    def stop()      = timer.cancel()
 
     def run() {
       index = (index + 1) % songs.length
       Player.synchronized { for (s <- subscribers) s.onNext(songs(index)) }
     }
-    def turnOn(s: Subscriber[String]) = Player.synchronized { subscribers += s }
+    def turnOn(s: Subscriber[String])  = Player.synchronized { subscribers += s }
     def turnOff(s: Subscriber[String]) = Player.synchronized { subscribers -= s }
   }
   Player.start()
@@ -246,13 +230,3 @@ object ObservablesHotVsCold extends App {
   Player.stop()
 
 }
-
-
-
-
-
-
-
-
-
-

@@ -15,24 +15,23 @@ import scala.concurrent.Future
 import scala.util.Success
 import scala.util.Failure
 
-/**
- * A distributed hash map is a collection distributed across multiple computers,
- * each of which contains part of the data, called a shard.
- * When there are 2^n shards, the first n bits of the hash code of the key are used
- * to decide which shard a key-value pair should go to.
- *
- * Implement the distributed hash map with the DistributedMap class:
- * class DistributedMap[K, V](shards: ActorRef*) {
- * def update(key: K, value: V): Future[Unit] = ???
- * def get(key: K): Future[Option[V]] = ???
- * }
- *
- * The DistributedMap class takes a list of actor references to the ShardActor instances,
- * whose actor template you also need to implement.
- *
- * You might assume that the length of the shards list is a power of two.
- * The update and get methods are asynchronous, and return the result in a future object.
- */
+/** A distributed hash map is a collection distributed across multiple computers,
+  * each of which contains part of the data, called a shard.
+  * When there are 2^n shards, the first n bits of the hash code of the key are used
+  * to decide which shard a key-value pair should go to.
+  *
+  * Implement the distributed hash map with the DistributedMap class:
+  * class DistributedMap[K, V](shards: ActorRef*) {
+  * def update(key: K, value: V): Future[Unit] = ???
+  * def get(key: K): Future[Option[V]] = ???
+  * }
+  *
+  * The DistributedMap class takes a list of actor references to the ShardActor instances,
+  * whose actor template you also need to implement.
+  *
+  * You might assume that the length of the shards list is a power of two.
+  * The update and get methods are asynchronous, and return the result in a future object.
+  */
 object Ex6 extends App {
 
   case class DistributedKey(shard: Int, key: Int)
@@ -44,13 +43,15 @@ object Ex6 extends App {
     implicit val timeout: Timeout = 5 seconds
 
     val shardsArray = shards.toArray
-    val n = (Math.log10(shardsArray.length) / Math.log10(2)).toInt
+    val n           = (Math.log10(shardsArray.length) / Math.log10(2)).toInt
 
     def getDistributedKey(key: Int, n: Int): DistributedKey = {
 
       def getKey(bs: String, n: Int): DistributedKey = {
-        DistributedKey(Integer.parseInt(bs.takeRight(n), 2),
-          if (bs.length > n) Integer.parseInt(bs.take(bs.length - n), 2) else 0)
+        DistributedKey(
+          Integer.parseInt(bs.takeRight(n), 2),
+          if (bs.length > n) Integer.parseInt(bs.take(bs.length - n), 2) else 0
+        )
       }
 
       getKey(key.toBinaryString, n)
@@ -72,7 +73,7 @@ object Ex6 extends App {
     var m = Map.empty[Int, V]
 
     override def receive: Receive = {
-      case Get(key: Int) =>
+      case Get(key: Int)         =>
         sender() ! m.get(key)
       case Update(key, value: V) =>
         log(s"update $key -> $value, actor = ${this.self.path} ")
@@ -96,7 +97,7 @@ object Ex6 extends App {
 
   val distributedMap = new DistributedMap[Int, String](actors: _*)
 
-  val values = List((0, "A"), (1, "B"), (2, "C"), (3, "D"), (4, "E"), (5,"F"), (6,"G"))
+  val values = List((0, "A"), (1, "B"), (2, "C"), (3, "D"), (4, "E"), (5, "F"), (6, "G"))
 
   values foreach { case (k, v) => distributedMap.update(k, v) }
 

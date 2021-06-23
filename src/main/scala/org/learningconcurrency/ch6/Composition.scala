@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch6
 
-
-
-
-
-
 object CompositionMapAndFilter extends App {
   import rx.lang.scala._
   import scala.concurrent.duration._
@@ -17,7 +12,6 @@ object CompositionMapAndFilter extends App {
   evens.subscribe(log _)
 
 }
-
 
 object CompositionConcatAndFlatten extends App {
   import rx.lang.scala._
@@ -35,10 +29,10 @@ object CompositionConcatAndFlatten extends App {
 
   def fetchQuoteObservable(): Observable[String] = Observable.from(fetchQuote())
 
-  def quotes: Observable[Observable[String]] = Observable.interval(0.5.seconds).take(5).map {
-    n => fetchQuoteObservable().map(txt => s"$n) $txt")
+  def quotes: Observable[Observable[String]] = Observable.interval(0.5.seconds).take(5).map { n =>
+    fetchQuoteObservable().map(txt => s"$n) $txt")
   }
-  
+
   log(s"Using concat")
   quotes.concat.subscribe(log _)
 
@@ -50,9 +44,13 @@ object CompositionConcatAndFlatten extends App {
   Thread.sleep(6000)
 
   log(s"Now using flatMap")
-  Observable.interval(0.5.seconds).take(5).flatMap({
-    n => fetchQuoteObservable().map(txt => s"$n) $txt")
-  }).subscribe(log _)
+  Observable
+    .interval(0.5.seconds)
+    .take(5)
+    .flatMap({ n =>
+      fetchQuoteObservable().map(txt => s"$n) $txt")
+    })
+    .subscribe(log _)
 
   Thread.sleep(6000)
 
@@ -66,7 +64,6 @@ object CompositionConcatAndFlatten extends App {
   Thread.sleep(6000)
 
 }
-
 
 // There is always one more bug.
 object CompositionRetry extends App {
@@ -84,7 +81,7 @@ object CompositionRetry extends App {
   }
 
   def errorMessage = items("Retrying...") ++ error(new Exception)
-  
+
   def shortQuote = for {
     txt     <- randomQuote
     message <- if (txt.length < 100) items(txt) else errorMessage
@@ -94,21 +91,19 @@ object CompositionRetry extends App {
 
 }
 
-
 object CompositionScan extends App {
   import rx.lang.scala._
 
-  CompositionRetry.shortQuote.retry.repeat.take(100).scan(0) {
-    (n, q) => if (q == "Retrying...") n + 1 else n
-  } subscribe(n => log(s"$n / 100"))
+  CompositionRetry.shortQuote.retry.repeat.take(100).scan(0) { (n, q) =>
+    if (q == "Retrying...") n + 1 else n
+  } subscribe (n => log(s"$n / 100"))
 }
-
 
 object CompositionReduce extends App {
   import rx.lang.scala._
   import scala.concurrent.duration._
 
-  def shortQuote = CompositionRetry.randomQuote.retry.take(5).filter(_ != "Retrying...")
+  def shortQuote            = CompositionRetry.randomQuote.retry.take(5).filter(_ != "Retrying...")
   val shortQuotesCollection = (shortQuote ++ shortQuote ++ shortQuote).foldLeft("") { (acc, q) =>
     s"$acc$q\n\n"
   }
@@ -116,7 +111,6 @@ object CompositionReduce extends App {
   shortQuotesCollection.subscribe(log _)
 
 }
-
 
 object CompositionErrors extends App {
   import rx.lang.scala._
@@ -134,9 +128,3 @@ object CompositionErrors extends App {
   continuedStatus.subscribe(log _)
 
 }
-
-
-
-
-
-

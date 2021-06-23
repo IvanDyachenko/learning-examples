@@ -1,21 +1,15 @@
 package org.learningconcurrency
 package ch6
 
-
-
-
-
-
 object SchedulersComputation extends App {
   import rx.lang.scala._
 
   val scheduler = schedulers.ComputationScheduler()
-  val numbers = Observable.from(0 until 20)
+  val numbers   = Observable.from(0 until 20)
   numbers.subscribe(n => log(s"num $n"))
   numbers.observeOn(scheduler).subscribe(n => log(s"num $n"))
 
 }
-
 
 object SchedulersSwing extends scala.swing.SimpleSwingApplication {
   import rx.lang.scala._
@@ -32,8 +26,8 @@ object SchedulersSwing extends scala.swing.SimpleSwingApplication {
     contents = button
 
     val buttonClicks = Observable[Unit] { sub =>
-      button.reactions += {
-        case ButtonClicked(_) => sub.onNext(())
+      button.reactions += { case ButtonClicked(_) =>
+        sub.onNext(())
       }
     }
 
@@ -41,7 +35,6 @@ object SchedulersSwing extends scala.swing.SimpleSwingApplication {
   }
 
 }
-
 
 object SchedulersBrowser extends scala.swing.SimpleSwingApplication {
   import rx.lang.scala._
@@ -58,7 +51,7 @@ object SchedulersBrowser extends scala.swing.SimpleSwingApplication {
 
     val termfield = new TextField("http://www.w3.org/Addressing/URL/url-spec.txt")
     val pagefield = new TextArea
-    val button = new Button {
+    val button    = new Button {
       text = "Feeling Lucky"
     }
 
@@ -77,9 +70,9 @@ object SchedulersBrowser extends scala.swing.SimpleSwingApplication {
 
   trait BrowserLogic {
     self: BrowserFrame =>
-    
+
     def suggestRequest(term: String): Observable[String] = {
-      val url = s"http://suggestqueries.google.com/complete/search?client=firefox&q=$term"
+      val url     = s"http://suggestqueries.google.com/complete/search?client=firefox&q=$term"
       val request = Future { Source.fromURL(url).mkString }
       Observable.from(request).timeout(0.5.seconds).onErrorResumeNext(Observable.items("(no suggestions)"))
     }
@@ -89,16 +82,15 @@ object SchedulersBrowser extends scala.swing.SimpleSwingApplication {
       Observable.from(request).timeout(4.seconds).onErrorResumeNext(t => Observable.items(s"Could not load page: $t"))
     }
 
-    termfield.texts.map(suggestRequest).concat.observeOn(swingScheduler).subscribe {
-      response => pagefield.text = response
+    termfield.texts.map(suggestRequest).concat.observeOn(swingScheduler).subscribe { response =>
+      pagefield.text = response
     }
 
-    button.clicks.map(_ => pageRequest(termfield.text)).concat.observeOn(swingScheduler).subscribe {
-      response => pagefield.text = response
+    button.clicks.map(_ => pageRequest(termfield.text)).concat.observeOn(swingScheduler).subscribe { response =>
+      pagefield.text = response
     }
   }
 
   def top = new BrowserFrame with BrowserLogic
 
 }
-

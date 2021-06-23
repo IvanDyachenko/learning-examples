@@ -1,15 +1,10 @@
 package org.learningconcurrency
 package ch3
 
-
-
-
-
-
 object LazyValsCreate extends App {
   import scala.concurrent._
-  
-  lazy val obj = new AnyRef
+
+  lazy val obj              = new AnyRef
   lazy val nondeterministic = s"made by ${Thread.currentThread.getName}"
 
   execute {
@@ -21,7 +16,6 @@ object LazyValsCreate extends App {
   log(s"Main thread sees nondeterministic = $nondeterministic")
 }
 
-
 object LazyValsObject extends App {
   object Lazy {
     log("Running Lazy constructor.")
@@ -32,21 +26,21 @@ object LazyValsObject extends App {
   log("Main thread completed.")
 }
 
-
 object LazyValsUnderTheHood extends App {
   @volatile private var _bitmap = false
-  private var _obj: AnyRef = _
-  def obj = if (_bitmap) _obj else this.synchronized {
-    if (!_bitmap) {
-      _obj = new AnyRef
-      _bitmap = true
+  private var _obj: AnyRef      = _
+  def obj                       = if (_bitmap) _obj
+  else
+    this.synchronized {
+      if (!_bitmap) {
+        _obj = new AnyRef
+        _bitmap = true
+      }
+      _obj
     }
-    _obj
-  }
 
   log(s"$obj"); log(s"$obj")
 }
-
 
 object LazyValsInspectMainThread extends App {
   val mainThread = Thread.currentThread
@@ -65,7 +59,6 @@ object LazyValsInspectMainThread extends App {
   x
 }
 
-
 object LazyValsDeadlock extends App {
   object A {
     lazy val x: Int = B.y
@@ -79,7 +72,6 @@ object LazyValsDeadlock extends App {
   A.x
 }
 
-
 object LazyValsAndSynchronized extends App {
   lazy val terminatedThread = {
     val t = ch2.thread {
@@ -92,7 +84,6 @@ object LazyValsAndSynchronized extends App {
   terminatedThread
 }
 
-
 object LazyValsAndBlocking extends App {
   lazy val x: Int = {
     val t = ch2.thread {
@@ -104,7 +95,6 @@ object LazyValsAndBlocking extends App {
   x
 }
 
-
 object LazyValsAndMonitors extends App {
   lazy val x = 1
   this.synchronized {
@@ -112,7 +102,3 @@ object LazyValsAndMonitors extends App {
     t.join()
   }
 }
-
-
-
-

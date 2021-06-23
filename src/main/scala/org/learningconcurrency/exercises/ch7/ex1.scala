@@ -2,8 +2,7 @@ package org.learningconcurrency
 package exercises
 package ch7
 
-/**
-  * Implement the transactional pair abstraction, represented with the TPair class:
+/** Implement the transactional pair abstraction, represented with the TPair class:
   *
   *   class TPair[P, Q](pinit: P, qinit: Q) {
   *     def first(implicit txn: InTxn): P = ???
@@ -25,9 +24,8 @@ object Ex1 extends App {
 
   class TPair[P, Q](pinit: P, qinit: Q) {
 
-    private val rFirst = Ref[P](pinit)
+    private val rFirst  = Ref[P](pinit)
     private val rSecond = Ref[Q](qinit)
-
 
     def first(implicit txn: InTxn): P = rFirst.single()
 
@@ -45,7 +43,7 @@ object Ex1 extends App {
   }
 
   //test
-  val p = new TPair[String,String]("first value","second value")
+  val p = new TPair[String, String]("first value", "second value")
 
   def swapOne = atomic { implicit txn =>
     p.swap
@@ -58,15 +56,16 @@ object Ex1 extends App {
     }
   }
 
-  (1 to 1001).map(_ => Future {
-    swapOne
-  })
+  (1 to 1001).map(_ =>
+    Future {
+      swapOne
+    }
+  )
 
   Thread.sleep(2000)
 
-  atomic {implicit txn =>
+  atomic { implicit txn =>
     log(s"Result: first = '${p.first}' vSecond = '${p.second}'")
   }
-
 
 }

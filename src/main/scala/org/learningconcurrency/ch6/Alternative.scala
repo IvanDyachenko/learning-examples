@@ -1,11 +1,7 @@
 package org.learningconcurrency
 package ch6
 
-
-
 import scala.reactive._
-
-
 
 object AkkaStreams extends App {
   import akka.actor.ActorSystem
@@ -22,12 +18,11 @@ object AkkaStreams extends App {
     .filter(isPrime)
     .map(num => s"Prime number: $num")
     .foreach(println)
-    .onComplete(FlowMaterializer(MaterializerSettings())) {
-      case _ => system.shutdown()
+    .onComplete(FlowMaterializer(MaterializerSettings())) { case _ =>
+      system.shutdown()
     }
 
 }
-
 
 object ReactiveCollections extends App {
 

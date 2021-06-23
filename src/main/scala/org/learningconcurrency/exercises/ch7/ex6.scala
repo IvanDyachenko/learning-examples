@@ -2,16 +2,16 @@ package org.learningconcurrency
 package exercises
 package ch7
 
-/**
- * Use ScalaSTM to implement a thread-safe TArrayBuffer class, which extends the scala.collection.mutable.Buffer interface.
- */
+/** Use ScalaSTM to implement a thread-safe TArrayBuffer class, which extends the scala.collection.mutable.Buffer interface.
+  */
 object Ex6 extends App {
   import scala.concurrent.stm._
 
-  class TArrayBuffer[T](initialSize: Int = 8)(implicit cm: scala.reflect.ClassTag[T]) extends scala.collection.mutable.Buffer[T] {
-    private[this] val len: Ref[Int] = Ref(0)
+  class TArrayBuffer[T](initialSize: Int = 8)(implicit cm: scala.reflect.ClassTag[T])
+      extends scala.collection.mutable.Buffer[T] {
+    private[this] val len: Ref[Int]         = Ref(0)
     private[this] val array: Ref[TArray[T]] = Ref(TArray.ofDim[T](initialSize))
-    private[this] var default: T = _
+    private[this] var default: T            = _
 
     def +=(elem: T): this.type = atomic { implicit txn =>
       val newLen = len() + 1
@@ -51,7 +51,7 @@ object Ex6 extends App {
     def insertAll(n: Int, elems: Traversable[T]): Unit = atomic { implicit txn =>
       if (n < 0 || n > len()) throw new IndexOutOfBoundsException(n.toString)
 
-      val count = elems.size
+      val count  = elems.size
       val newLen = len() + count
       if (newLen > array().length) {
         copyToNewArray(newLen)
@@ -68,7 +68,7 @@ object Ex6 extends App {
     def remove(n: Int): T = atomic { implicit txn =>
       if (n < 0 || n >= len()) throw new IndexOutOfBoundsException(n.toString)
 
-      val a = array()
+      val a      = array()
       val result = a(n)
 
       shiftLeft(n + 1, n, len() - n - 1)
@@ -84,7 +84,7 @@ object Ex6 extends App {
     }
 
     def iterator: Iterator[T] = atomic { implicit txn =>
-      val a = array()
+      val a   = array()
       val seq = for (i <- 0 until len()) yield a(i)
       seq.iterator
     }
@@ -180,7 +180,7 @@ object Ex6 extends App {
 
     // for `remove`.
     {
-      val buf = new TArrayBuffer[Int]()
+      val buf     = new TArrayBuffer[Int]()
       buf += 1
       buf += 2
       buf += 3
@@ -219,13 +219,15 @@ object Ex6 extends App {
 
     // for concurrency of `+=`.
     {
-      val buf = new TArrayBuffer[Int](1)
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15) // tweak not to append `i` in iteration order.
-          buf += i
+      val buf     = new TArrayBuffer[Int](1)
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15) // tweak not to append `i` in iteration order.
+            buf += i
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 10)
@@ -233,13 +235,15 @@ object Ex6 extends App {
 
     // for concurrency of `+=:`.
     {
-      val buf = new TArrayBuffer[Int](1)
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15)
-          i +=: buf
+      val buf     = new TArrayBuffer[Int](1)
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15)
+            i +=: buf
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 10)
@@ -247,13 +251,15 @@ object Ex6 extends App {
 
     // for concurrency of `insertAll`.
     {
-      val buf = new TArrayBuffer[Int](1)
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15)
-          buf.insertAll(0, List(i, i * 10))
+      val buf     = new TArrayBuffer[Int](1)
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15)
+            buf.insertAll(0, List(i, i * 10))
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 20)
@@ -264,23 +270,24 @@ object Ex6 extends App {
 
     // for concurrency of `remove`.
     {
-      val buf = new TArrayBuffer[Int]()
+      val buf     = new TArrayBuffer[Int]()
       buf.insertAll(0, 1 to 10)
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15)
-          buf.remove(0)
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15)
+            buf.remove(0)
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 0)
     }
   }
 
-  /**
-   * `Vector` based implementation.
-   */
+  /** `Vector` based implementation.
+    */
   class TVectorBuffer[T] extends scala.collection.mutable.Buffer[T] {
     private[this] val buf: Ref[Vector[T]] = Ref(Vector.empty[T])
 
@@ -299,11 +306,11 @@ object Ex6 extends App {
     def clear(): Unit = buf.single.set(Vector.empty[T])
 
     def insertAll(n: Int, elems: collection.Traversable[T]): Unit = atomic { implicit txn =>
-      val ts = buf()
+      val ts  = buf()
       val len = ts.length
       if (n < 0 || n > len) throw new IndexOutOfBoundsException(n.toString)
 
-      val left = ts.take(n)
+      val left  = ts.take(n)
       val right = ts.drop(n)
       buf() = left ++ elems ++ right
     }
@@ -311,18 +318,18 @@ object Ex6 extends App {
     def length: Int = buf.single().length
 
     def remove(n: Int): T = atomic { implicit txn =>
-      val ts = buf()
+      val ts  = buf()
       val len = ts.length
       if (n < 0 || n >= len) throw new IndexOutOfBoundsException(n.toString)
 
-      val left = ts.take(n)
+      val left  = ts.take(n)
       val right = ts.drop(n + 1)
       buf() = left ++ right
       ts(n)
     }
 
     def update(n: Int, newelem: T): Unit = atomic { implicit txn =>
-      val ts = buf()
+      val ts  = buf()
       val len = ts.length
       if (n < 0 || n >= len) throw new IndexOutOfBoundsException(n.toString)
 
@@ -383,7 +390,7 @@ object Ex6 extends App {
 
     // for `remove`.
     {
-      val buf = new TVectorBuffer[Int]()
+      val buf     = new TVectorBuffer[Int]()
       buf += 1
       buf += 2
       buf += 1
@@ -404,13 +411,15 @@ object Ex6 extends App {
 
     // for concurrency of `+=`.
     {
-      val buf = new TVectorBuffer[Int]()
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15) // tweak not to append `i` in iteration order.
-          buf += i
+      val buf     = new TVectorBuffer[Int]()
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15) // tweak not to append `i` in iteration order.
+            buf += i
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 10)
@@ -418,13 +427,15 @@ object Ex6 extends App {
 
     // for concurrency of `+=:`.
     {
-      val buf = new TVectorBuffer[Int]()
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15)
-          i +=: buf
+      val buf     = new TVectorBuffer[Int]()
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15)
+            i +=: buf
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 10)
@@ -432,13 +443,15 @@ object Ex6 extends App {
 
     // for concurrency of `insertAll`.
     {
-      val buf = new TVectorBuffer[Int]()
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15)
-          buf.insertAll(0, List(i, i * 10))
+      val buf     = new TVectorBuffer[Int]()
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15)
+            buf.insertAll(0, List(i, i * 10))
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 20)
@@ -449,14 +462,16 @@ object Ex6 extends App {
 
     // for concurrency of `remove`.
     {
-      val buf = new TVectorBuffer[Int]()
+      val buf     = new TVectorBuffer[Int]()
       buf.insertAll(0, 1 to 10)
-      val threads = (1 to 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15)
-          buf.remove(0)
+      val threads = (1 to 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15)
+            buf.remove(0)
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.length == 0)
@@ -464,14 +479,16 @@ object Ex6 extends App {
 
     // for concurrency of `update`.
     {
-      val buf = new TVectorBuffer[Int]()
+      val buf     = new TVectorBuffer[Int]()
       buf.insertAll(0, 1 to 10)
-      val threads = (0 until 10).map(i => new Thread {
-        override def run(): Unit = {
-          Thread.sleep(15)
-          buf(i) = i + 10
+      val threads = (0 until 10).map(i =>
+        new Thread {
+          override def run(): Unit = {
+            Thread.sleep(15)
+            buf(i) = i + 10
+          }
         }
-      })
+      )
       threads.foreach(_.start())
       threads.foreach(_.join())
       assert(buf.toList == (10 until 10 + 10).toList)

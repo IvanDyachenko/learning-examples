@@ -4,8 +4,8 @@ package ch8
 
 import akka.actor._
 import akka.event.Logging
-/**
-  * Recall the bank account example from Chapter 2, Concurrency on the JVM and the Java Memory Model.
+
+/** Recall the bank account example from Chapter 2, Concurrency on the JVM and the Java Memory Model.
   * Implement different bank accounts as separate actors,
   * represented with the AccountActor class.
   * When an AccountActor class receives a Send message,
@@ -16,26 +16,25 @@ import akka.event.Logging
   */
 object Ex2 extends App {
 
-  /**
-    * If the actor receives a Kill message at any point during the transaction,
+  /** If the actor receives a Kill message at any point during the transaction,
     * The actor will restart and it will lost his state (amount)
     * This problem can't be solved easily in the general case.
-   */
+    */
   class AccountActor(name: String, var money: Int) extends Actor {
 
     val log = Logging(context.system, this)
 
     override def receive: Receive = {
-      case AccountActor.PlusMoney(amount) =>
+      case AccountActor.PlusMoney(amount)                     =>
         money += amount
         sender ! AccountActor.Ok
       case AccountActor.MinusMoney(amount) if money >= amount =>
         money -= amount
         sender ! AccountActor.Ok
-      case AccountActor.MinusMoney(amount) =>
+      case AccountActor.MinusMoney(amount)                    =>
         log.error(s"Insufficient funds. ($money < $amount)")
         sender ! AccountActor.Error
-      case AccountActor.Print => log.info(s"$name: $money")
+      case AccountActor.Print                                 => log.info(s"$name: $money")
     }
   }
 
@@ -55,12 +54,12 @@ object Ex2 extends App {
 
     val log = Logging(context.system, this)
 
-    def checkTransferTo: Receive = {
-      case AccountActor.Ok => log.info("Transfer complete")
+    def checkTransferTo: Receive = { case AccountActor.Ok =>
+      log.info("Transfer complete")
     }
 
     def checkTransferFrom(accountTo: ActorRef, amount: Int): Receive = {
-      case AccountActor.Ok =>
+      case AccountActor.Ok    =>
         accountTo ! AccountActor.PlusMoney(amount)
         context.become(checkTransferTo)
       case AccountActor.Error =>
@@ -68,10 +67,9 @@ object Ex2 extends App {
         context.stop(self)
     }
 
-    override def receive: Actor.Receive = {
-      case TransactionActor.StartTransaction(accountFrom, accountTo, amount) =>
-        accountFrom ! AccountActor.MinusMoney(amount)
-        context.become(checkTransferFrom(accountTo, amount))
+    override def receive: Actor.Receive = { case TransactionActor.StartTransaction(accountFrom, accountTo, amount) =>
+      accountFrom ! AccountActor.MinusMoney(amount)
+      context.become(checkTransferFrom(accountTo, amount))
     }
   }
 
@@ -82,7 +80,7 @@ object Ex2 extends App {
   //test
   val system = ActorSystem("AccountSystem")
 
-  val first = system.actorOf(AccountActor.props("Account A", 10), "account_A")
+  val first  = system.actorOf(AccountActor.props("Account A", 10), "account_A")
   val second = system.actorOf(AccountActor.props("Account B", 0), "account_B")
 
   val transaction = system.actorOf(Props[TransactionActor], "transfer")

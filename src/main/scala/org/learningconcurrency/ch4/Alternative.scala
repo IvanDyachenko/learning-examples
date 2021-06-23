@@ -1,10 +1,6 @@
 package org.learningconcurrency
 package ch4
 
-
-
-
-
 // // only enable with Scala 2.10.4
 // object Finagle extends App {
 //   import com.twitter.util.{Future, Promise}
@@ -23,7 +19,6 @@ package ch4
 
 // }
 
-
 object Scalaz extends App {
   import scalaz.concurrent._
 
@@ -40,4 +35,3 @@ object Scalaz extends App {
   }
 
 }
-

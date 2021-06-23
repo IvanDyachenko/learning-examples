@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch7
 
-
-
-
-
-
 object TransactionLocals extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -21,26 +16,25 @@ object TransactionLocals extends App {
     }
   }
 
-  val myList = new TSortedList().insert(14).insert(22)
+  val myList                 = new TSortedList().insert(14).insert(22)
   def clearWithLog(): String = atomic { implicit txn =>
-    clearList(myList) 
+    clearList(myList)
     myLog()
   }
-  val f = Future { clearWithLog() }
-  val g = Future { clearWithLog() }
+  val f                      = Future { clearWithLog() }
+  val g                      = Future { clearWithLog() }
   for (h1 <- f; h2 <- g) {
     log(s"Log for f: $h1\nLog for g: $h2")
   }
 
 }
 
-
 object TransactionalArray extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
   import scala.concurrent.stm._
 
-  val pages = Seq.fill(5)("Scala 2.10 is out, " * 7)
+  val pages   = Seq.fill(5)("Scala 2.10 is out, " * 7)
   val website = TArray(pages)
 
   def replace(pat: String, txt: String): Unit = atomic { implicit txn =>
@@ -60,7 +54,6 @@ object TransactionalArray extends App {
   Future { log(s"Document\n$asString") }
 
 }
-
 
 object TransactionalMap extends App {
   import scala.concurrent._
@@ -82,7 +75,6 @@ object TransactionalMap extends App {
   }
 
 }
-
 
 object TransactionalDocument extends App {
   import scala.concurrent._
@@ -118,7 +110,6 @@ object TransactionalDocument extends App {
 
 }
 
-
 object TransactionalLibrary extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -137,11 +128,13 @@ object TransactionalLibrary extends App {
     def removeDoc(name: String): Option[TDocument] = documents.single.remove(name)
 
     def findDocs(pattern: String): List[String] = atomic { implicit txn =>
-      documents.filter({
-        case (name, doc) =>
+      documents
+        .filter({ case (name, doc) =>
           val pages = doc.pages()
           (0 until pages.length).exists(i => pages(i).contains(pattern))
-      }).keys.toList
+        })
+        .keys
+        .toList
     }
   }
 
@@ -159,8 +152,3 @@ object TransactionalLibrary extends App {
   }
 
 }
-
-
-
-
-

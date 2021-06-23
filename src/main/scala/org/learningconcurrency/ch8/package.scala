@@ -1,14 +1,10 @@
 package org.learningconcurrency
 
-
-
 import akka.actor.ActorSystem
 import com.typesafe.config._
 
-
-
 package object ch8 {
-  
+
   lazy val ourSystem = ActorSystem("OurExampleSystem")
 
   def remotingConfig(port: Int) = ConfigFactory.parseString(s"""
@@ -27,5 +23,3 @@ akka {
   def remotingSystem(name: String, port: Int) = ActorSystem(name, remotingConfig(port))
 
 }
-
-

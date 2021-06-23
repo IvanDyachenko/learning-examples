@@ -6,21 +6,19 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Promise}
 import scala.util.Try
 
-/**
- * Implement an abstraction called a single-assignment variable, represented by the IVar class:
- *
- * class IVar[T] {
- * def apply(): T = ???
- * def :=(x: T): Unit = ???
- * }
- *
- * When created, the IVar class does not contain a value, and calling apply results in an exception.
- * After a value is assigned using the := method, subsequent calls to := throw an exception,
- * and the apply method returns the previously assigned value.
- *
- * Use only futures and promises, and avoid the synchronization primitives from the previous chapters.
- *
- */
+/** Implement an abstraction called a single-assignment variable, represented by the IVar class:
+  *
+  * class IVar[T] {
+  * def apply(): T = ???
+  * def :=(x: T): Unit = ???
+  * }
+  *
+  * When created, the IVar class does not contain a value, and calling apply results in an exception.
+  * After a value is assigned using the := method, subsequent calls to := throw an exception,
+  * and the apply method returns the previously assigned value.
+  *
+  * Use only futures and promises, and avoid the synchronization primitives from the previous chapters.
+  */
 
 object Ex2 extends App {
 
@@ -38,13 +36,14 @@ object Ex2 extends App {
   import org.learningconcurrency.ch2.thread
 
   val v = new IVar[String]
-  (1 to 10).foreach((i) => thread {
-    try {
-      v := s"v = ${Thread.currentThread().getName}"
-    } catch {
-      case e:Throwable => log(s"Error !!! ${e.getMessage}. Current value = ${v.apply}")
+  (1 to 10).foreach((i) =>
+    thread {
+      try {
+        v := s"v = ${Thread.currentThread().getName}"
+      } catch {
+        case e: Throwable => log(s"Error !!! ${e.getMessage}. Current value = ${v.apply}")
+      }
     }
-  }
   )
 
 }

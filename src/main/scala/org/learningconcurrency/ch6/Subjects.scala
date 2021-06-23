@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch6
 
-
-
-
-
-
 object SubjectsOS extends App {
   import rx.lang.scala._
   import scala.concurrent.duration._
@@ -25,7 +20,7 @@ object SubjectsOS extends App {
   }
 
   log(s"RxOS booting...")
-  val modules = List(
+  val modules       = List(
     TimeModule.systemClock,
     FileSystemModule.fileModifications
   )
@@ -37,7 +32,6 @@ object SubjectsOS extends App {
   log(s"RxOS going for shutdown")
 
 }
-
 
 object SubjectsOSLog extends App {
   import rx.lang.scala._
@@ -66,13 +60,12 @@ object SubjectsOSLog extends App {
 
 }
 
-
 object SubjectsOSRegistry extends App {
   import rx.lang.scala._
 
   object KernelModuleC {
-    private val newKeys = Subject[(String, String)]()
-    val registry = subjects.BehaviorSubject(Map[String, String]())
+    private val newKeys           = Subject[(String, String)]()
+    val registry                  = subjects.BehaviorSubject(Map[String, String]())
     newKeys.scan(Map[String, String]())(_ + _).subscribe(registry)
     def add(kv: (String, String)) = newKeys.onNext(kv)
   }
@@ -95,21 +88,20 @@ object SubjectsOSRegistry extends App {
 
 }
 
-
 object SubjectsAsync extends App {
   import rx.lang.scala._
 
   object ProcessModule {
-    private val added = Subject[Either[Int, Int]]()
-    private val ended = Subject[Either[Int, Int]]()
+    private val added  = Subject[Either[Int, Int]]()
+    private val ended  = Subject[Either[Int, Int]]()
     private val events = (added merge ended).scan(Set[Int]()) {
       case (set, Right(pid)) => set + pid
-      case (set, Left(pid)) => set - pid
+      case (set, Left(pid))  => set - pid
     }
-    val processes = subjects.AsyncSubject[Set[Int]]()
+    val processes      = subjects.AsyncSubject[Set[Int]]()
     events.subscribe(processes)
-    def add(pid: Int) = added.onNext(Right(pid))
-    def end(pid: Int) = ended.onNext(Left(pid))
+    def add(pid: Int)  = added.onNext(Right(pid))
+    def end(pid: Int)  = ended.onNext(Left(pid))
   }
 
   ProcessModule.add(1)
@@ -126,4 +118,3 @@ object SubjectsAsync extends App {
   ProcessModule.processes.onCompleted()
 
 }
-

@@ -2,8 +2,7 @@ package org.learningconcurrency
 package exercises
 package ch7
 
-/**
-  * Implement the atomicWithRetryMax method,
+/** Implement the atomicWithRetryMax method,
   * which is used to start a transaction that can be retried at most n times:
   *
   * def atomicWithRetryMax[T](n: Int)(block: InTxn => T): T = ???
@@ -23,11 +22,11 @@ object Ex4 extends App {
 
     var cntRetries = 0
 
-    atomic{ implicit txn =>
+    atomic { implicit txn =>
       Txn.afterRollback(_ => cntRetries += 1)
 
       if (cntRetries > n) {
-        throw  ReachMaxNumberException(cntRetries)
+        throw ReachMaxNumberException(cntRetries)
       }
 
       block(txn)

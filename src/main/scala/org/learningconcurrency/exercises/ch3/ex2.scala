@@ -2,15 +2,14 @@ package org.learningconcurrency
 package exercises
 package ch3
 
-/**
- * Implement a TreiberStack class, which implements a concurrent stack abstraction:
- *  class TreiberStack[T] {
- *    def push(x: T): Unit = ???
- *       def pop(): T = ???
- *  }
- * Use an atomic reference variable that points to a linked list of nodes that were previously pushed to the stack.
- * Make sure that your implementation is lock-free and not susceptible to the ABA problem.
- */
+/** Implement a TreiberStack class, which implements a concurrent stack abstraction:
+  *  class TreiberStack[T] {
+  *    def push(x: T): Unit = ???
+  *       def pop(): T = ???
+  *  }
+  * Use an atomic reference variable that points to a linked list of nodes that were previously pushed to the stack.
+  * Make sure that your implementation is lock-free and not susceptible to the ABA problem.
+  */
 
 import java.util.concurrent.atomic.AtomicReference
 
@@ -25,15 +24,15 @@ object Ex2 extends App {
     @tailrec
     final def push(x: T): Unit = {
       val oldList = r.get
-      val newList = x::oldList
-      if (!r.compareAndSet(oldList,newList)) push(x)
+      val newList = x :: oldList
+      if (!r.compareAndSet(oldList, newList)) push(x)
     }
 
     @tailrec
     final def pop(): T = {
       val oldList = r.get
       val newList = oldList.tail
-      if (r.compareAndSet(oldList,newList)) oldList.head
+      if (r.compareAndSet(oldList, newList)) oldList.head
       else pop()
     }
 
@@ -50,9 +49,9 @@ object Ex2 extends App {
     }
   }
 
-  val t2 = thread  {
+  val t2 = thread {
     for (i <- 1 to 10) {
-      s.push(i*10)
+      s.push(i * 10)
       Thread.sleep(1)
     }
   }
@@ -62,6 +61,5 @@ object Ex2 extends App {
 
   for (i <- 1 to 20)
     log(s"s[$i] = ${s.pop()}")
-
 
 }

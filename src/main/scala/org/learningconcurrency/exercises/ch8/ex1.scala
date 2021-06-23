@@ -23,10 +23,12 @@ object Ex1 extends App {
     val p = Promise[Unit]
 
     import java.util.Timer
-    (new Timer(true)).
-      schedule(new TimerTask {
+    (new Timer(true)).schedule(
+      new TimerTask {
         override def run(): Unit = p.success()
-      }, t)
+      },
+      t
+    )
 
     p.future
   }
@@ -35,10 +37,9 @@ object Ex1 extends App {
   import org.learningconcurrency.exercises.ch8.Ex1.TimerActor.Timeout
 
   class TimerActor extends Actor {
-    override def receive = {
-      case Register(t) =>
-        log(s"REGISTER MESSAGE (timeout = $t) from $sender")
-        timerFuture(t) map { (_) => Timeout } pipeTo sender
+    override def receive = { case Register(t) =>
+      log(s"REGISTER MESSAGE (timeout = $t) from $sender")
+      timerFuture(t) map { (_) => Timeout } pipeTo sender
     }
   }
 
@@ -52,8 +53,8 @@ object Ex1 extends App {
   class TestActor(t: Int) extends Actor {
     context.actorSelection("/user/timerActor") ! Register(t)
 
-    override def receive: Receive = {
-      case Timeout => log(s"TIMEOUT MESSAGE from ${sender}")
+    override def receive: Receive = { case Timeout =>
+      log(s"TIMEOUT MESSAGE from ${sender}")
     }
   }
 
@@ -62,13 +63,12 @@ object Ex1 extends App {
     def props(t: Int) = Props(classOf[TestActor], t)
   }
 
-  val system = ActorSystem("MyActorSystem")
+  val system     = ActorSystem("MyActorSystem")
   val timerActor = system.actorOf(TimerActor.props, "timerActor")
 
   (1 to 10) map ((i) => system.actorOf(TestActor.props(i * 1000), s"testActor-$i"))
 
   Thread.sleep(12000)
   system.shutdown()
-
 
 }

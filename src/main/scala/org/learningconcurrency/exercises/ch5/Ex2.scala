@@ -4,14 +4,13 @@ package ch5
 
 import scala.util.Random
 
-/**
- * Count the occurrences of the whitespace character in a randomly generated string,
- * where the probability of a whitespace at each position is determined by a p parameter.
- *
- * Use the parallel foreach method.
- *
- * Plot a graph that correlates the running time of this operation with the p parameter.
- */
+/** Count the occurrences of the whitespace character in a randomly generated string,
+  * where the probability of a whitespace at each position is determined by a p parameter.
+  *
+  * Use the parallel foreach method.
+  *
+  * Plot a graph that correlates the running time of this operation with the p parameter.
+  */
 object Ex2 extends App {
 
   import org.learningconcurrency.ch5._
@@ -29,7 +28,7 @@ object Ex2 extends App {
 
   def timedForeach(s: Seq[Char]) = {
     var count = 0
-    def add = synchronized {
+    def add   = synchronized {
       count += 1
     }
 
@@ -48,13 +47,13 @@ object Ex2 extends App {
   val p = (0 until 10).map { i => i / 9.0 }
 
   log("---- Calculation occurrences with foreach method")
-  val dataForeach = p.map((p) => (p, generateString(p))).map {
-    case (p, s) => log(s"p = $p"); (p, timedForeach(s))
+  val dataForeach = p.map((p) => (p, generateString(p))).map { case (p, s) =>
+    log(s"p = $p"); (p, timedForeach(s))
   }
 
   log("---- Calculation occurrences with count method")
-  val dataCount = p.map((p) => (p, generateString(p))).map {
-    case (p, s) => log(s"p = $p"); (p, timedCount(s))
+  val dataCount = p.map((p) => (p, generateString(p))).map { case (p, s) =>
+    log(s"p = $p"); (p, timedCount(s))
   }
 
   //plot graph

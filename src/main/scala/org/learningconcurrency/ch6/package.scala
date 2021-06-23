@@ -1,7 +1,5 @@
 package org.learningconcurrency
 
-
-
 import scala.swing._
 import scala.swing.event._
 import javax.swing._
@@ -9,22 +7,20 @@ import java.awt.event._
 import rx.lang.scala._
 import java.util.concurrent.Executor
 
-
-
 package object ch6 {
 
   implicit class ButtonOps(val self: Button) {
     def clicks = Observable[Unit] { sub =>
-      self.reactions += {
-        case ButtonClicked(_) => sub.onNext(())
+      self.reactions += { case ButtonClicked(_) =>
+        sub.onNext(())
       }
     }
   }
-  
+
   implicit class TextFieldOps(val self: TextField) {
     def texts = Observable[String] { sub =>
-      self.reactions += {
-        case ValueChanged(_) => sub.onNext(self.text)
+      self.reactions += { case ValueChanged(_) =>
+        sub.onNext(self.text)
       }
     }
   }
@@ -42,7 +38,7 @@ package object ch6 {
     }
   }
 
-  def swing(body: =>Unit) = {
+  def swing(body: => Unit) = {
     val r = new Runnable {
       def run() = body
     }
@@ -55,5 +51,4 @@ package object ch6 {
     })
   }
 
-  
 }

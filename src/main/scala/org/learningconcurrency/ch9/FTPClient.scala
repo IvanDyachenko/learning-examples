@@ -1,8 +1,6 @@
 package org.learningconcurrency
 package ch9
 
-
-
 import scala.collection._
 import scala.util.{Try, Success, Failure}
 import scala.swing._
@@ -21,8 +19,6 @@ import akka.pattern.{ask, pipe}
 import akka.util.Timeout
 import ch6._
 
-
-
 abstract class FTPClientFrame extends MainFrame {
   import BorderPanel.Position._
 
@@ -30,7 +26,7 @@ abstract class FTPClientFrame extends MainFrame {
 
   class FilePane extends BorderPanel {
     object pathBar extends BorderPanel {
-      val label = new Label("Path:")
+      val label    = new Label("Path:")
       val filePath = new TextField(".") {
         border = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true)
         editable = false
@@ -45,7 +41,7 @@ abstract class FTPClientFrame extends MainFrame {
 
     object scrollPane extends ScrollPane {
       val columnNames = Array[AnyRef]("Filename", "Size", "Date modified")
-      val fileTable = new Table {
+      val fileTable   = new Table {
         showGrid = true
         model = new DefaultTableModel(columnNames, 0) {
           override def isCellEditable(r: Int, c: Int) = false
@@ -57,14 +53,14 @@ abstract class FTPClientFrame extends MainFrame {
     layout(scrollPane) = Center
 
     object buttons extends GridPanel(1, 2) {
-      val copyButton = new Button("Copy")
+      val copyButton   = new Button("Copy")
       val deleteButton = new Button("Delete")
       contents += copyButton
       contents += deleteButton
     }
     layout(buttons) = South
 
-    var parent: String = "."
+    var parent: String          = "."
     var dirFiles: Seq[FileInfo] = Nil
 
     def table = scrollPane.fileTable
@@ -73,7 +69,7 @@ abstract class FTPClientFrame extends MainFrame {
   }
 
   object files extends GridPanel(1, 2) {
-    val leftPane = new FilePane
+    val leftPane  = new FilePane
     val rightPane = new FilePane
     contents += leftPane
     contents += rightPane
@@ -95,7 +91,7 @@ abstract class FTPClientFrame extends MainFrame {
     contents += file
     contents += help
   }
-  
+
   object status extends BorderPanel {
     val label = new Label("connecting...", null, Alignment.Left)
     layout(new Label("Status: ")) = West
@@ -110,18 +106,16 @@ abstract class FTPClientFrame extends MainFrame {
 
 }
 
-
 class FTPClientActor(implicit val timeout: Timeout) extends Actor {
   import FTPClientActor._
   import FTPServerActor._
 
-  def unconnected: Actor.Receive = {
-    case Start(host) =>
-      // connect to server
-      val serverActorPath = s"akka.tcp://FTPServerSystem@$host/user/server"
-      val serverActorSel = context.actorSelection(serverActorPath)
-      serverActorSel ! Identify(())
-      context.become(connecting(sender))
+  def unconnected: Actor.Receive = { case Start(host) =>
+    // connect to server
+    val serverActorPath = s"akka.tcp://FTPServerSystem@$host/user/server"
+    val serverActorSel  = context.actorSelection(serverActorPath)
+    serverActorSel ! Identify(())
+    context.become(connecting(sender))
   }
 
   def connecting(application: ActorRef): Actor.Receive = {
@@ -129,30 +123,27 @@ class FTPClientActor(implicit val timeout: Timeout) extends Actor {
       application ! true
       println("found: " + ref)
       context.become(connected(ref))
-    case ActorIdentity(_, None) =>
+    case ActorIdentity(_, None)      =>
       application ! false
       context.become(unconnected)
   }
 
-  def connected(serverActor: ActorRef): Actor.Receive = {
-    case command: Command =>
-      (serverActor ? command).pipeTo(sender)
+  def connected(serverActor: ActorRef): Actor.Receive = { case command: Command =>
+    (serverActor ? command).pipeTo(sender)
   }
 
   def receive = unconnected
 
 }
 
-
 object FTPClientActor {
   case class Start(serverActorUrl: String)
 }
 
-
 trait FTPClientApi {
   implicit val timeout: Timeout = Timeout(4 seconds)
-  val system = ch8.remotingSystem("FTPClientSystem", 0)
-  val clientActor = system.actorOf(Props(classOf[FTPClientActor], timeout))
+  val system                    = ch8.remotingSystem("FTPClientSystem", 0)
+  val clientActor               = system.actorOf(Props(classOf[FTPClientActor], timeout))
 
   def host: String
 
@@ -184,12 +175,11 @@ trait FTPClientApi {
 
 }
 
-
 trait FTPClientLogic {
   self: FTPClientFrame with FTPClientApi =>
 
   connected.onComplete {
-    case Success(true) =>
+    case Success(true)  =>
       swing {
         status.label.text = "Connected!"
         refreshPane(files.leftPane)
@@ -197,7 +187,7 @@ trait FTPClientLogic {
       }
     case Success(false) =>
       swing { status.label.text = "Could not find server." }
-    case Failure(t) =>
+    case Failure(t)     =>
       swing { status.label.text = s"Could not connect to server: $t" }
   }
 
@@ -217,7 +207,7 @@ trait FTPClientLogic {
     getFileList(dir) onComplete {
       case Success((dir, files)) =>
         swing { updatePane(pane, dir, files) }
-      case Failure(t) =>
+      case Failure(t)            =>
         swing { status.label.text = s"Could not update file pane: $t" }
     }
   }
@@ -247,12 +237,12 @@ trait FTPClientLogic {
       .map(info => (info, files.opposite(pane).currentPath))
     rowCopies.subscribe { t =>
       val (info, destDir) = t
-      val dest = destDir + File.separator + info.name
+      val dest            = destDir + File.separator + info.name
       copyFile(info.path, dest) onComplete {
         case Success(s) =>
           swing { setStatus(s"File copied: $s") }
         case Failure(t) =>
-          swing { setStatus(s"Could not copy file: $t")}
+          swing { setStatus(s"Could not copy file: $t") }
       }
     }
 
@@ -270,20 +260,17 @@ trait FTPClientLogic {
   setupPane(files.leftPane)
   setupPane(files.rightPane)
 
-  menu.file.exit.reactions += {
-    case ButtonClicked(_) =>
-      system.stop(clientActor)
-      system.shutdown()
-      sys.exit(0)
+  menu.file.exit.reactions += { case ButtonClicked(_) =>
+    system.stop(clientActor)
+    system.shutdown()
+    sys.exit(0)
   }
 
-  menu.help.about.reactions += {
-    case ButtonClicked(_) =>
-      Dialog.showMessage(message = "ScalaFTP version 0.1, made in Switzerland", title = "About ScalaFTP")
+  menu.help.about.reactions += { case ButtonClicked(_) =>
+    Dialog.showMessage(message = "ScalaFTP version 0.1, made in Switzerland", title = "About ScalaFTP")
   }
 
 }
-
 
 object FTPClient extends SimpleSwingApplication {
 
@@ -302,14 +289,15 @@ object FTPClient extends SimpleSwingApplication {
   var hostArg: String = ""
 
   override def main(args: Array[String]) {
-    hostArg = if (args.length > 0) args(0) else {
-      println("usage (from sbt):")
-      println("    run <ftp-server-url>")
-      println("    runMain org.learningconcurrency.ch9.FTPClient <ftp-server-url>")
-      sys.exit(1)
-    }
+    hostArg =
+      if (args.length > 0) args(0)
+      else {
+        println("usage (from sbt):")
+        println("    run <ftp-server-url>")
+        println("    runMain org.learningconcurrency.ch9.FTPClient <ftp-server-url>")
+        sys.exit(1)
+      }
     super.main(args)
   }
 
 }
-

@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch7
 
-
-
-
-
-
 object CompositionSideEffects extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -23,7 +18,6 @@ object CompositionSideEffects extends App {
 
 }
 
-
 object CompositionEscape extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -35,14 +29,13 @@ object CompositionEscape extends App {
     Future {
       Thread.sleep(500)
       myValue() = myValue() + 1
-    } onComplete {
-      case t => println(t)
+    } onComplete { case t =>
+      println(t)
     }
   }
 
   Thread.sleep(1000)
 }
-
 
 object CompositionCorrectSideEffect extends App {
   import scala.concurrent._
@@ -64,7 +57,6 @@ object CompositionCorrectSideEffect extends App {
 
 }
 
-
 object CompositionLoggingRollback extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -84,7 +76,6 @@ object CompositionLoggingRollback extends App {
 
 }
 
-
 object CompositionList extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -96,20 +87,19 @@ object CompositionList extends App {
       next() = n
       n.next() = oldNext
     }
-    def nextNode: Node = next.single()
-    def appendIfEnd(n: Node) = next.single.transform {
-      oldNext => if (oldNext == null) n else oldNext
+    def nextNode: Node        = next.single()
+    def appendIfEnd(n: Node)  = next.single.transform { oldNext =>
+      if (oldNext == null) n else oldNext
     }
   }
 
   val nodes = Node(1, Ref(Node(4, Ref(Node(5, Ref(null))))))
-  val f = Future { nodes.append(Node(2, Ref(null))) }
-  val g = Future { nodes.append(Node(3, Ref(null))) }
+  val f     = Future { nodes.append(Node(2, Ref(null))) }
+  val g     = Future { nodes.append(Node(3, Ref(null))) }
 
   for (_ <- f; _ <- g) log(s"Next node is: ${nodes.nextNode}")
 
 }
-
 
 object CompositionMutations extends App {
   import scala.concurrent._
@@ -118,7 +108,7 @@ object CompositionMutations extends App {
   import CompositionList.Node
 
   def nodeToString(n: Node): String = atomic { implicit txn =>
-    val b = new StringBuilder
+    val b    = new StringBuilder
     var curr = n
     while (curr != null) {
       b ++= s"${curr.elem}, "
@@ -128,7 +118,6 @@ object CompositionMutations extends App {
   }
 
 }
-
 
 object CompositionSortedList extends App {
   import scala.concurrent._
@@ -166,7 +155,6 @@ object CompositionSortedList extends App {
   for (_ <- f; _ <- g) log(s"sorted list - $sortedList")
 
 }
-
 
 object CompositionExceptions extends App {
   import scala.concurrent._
@@ -217,8 +205,8 @@ object CompositionExceptions extends App {
   import scala.util.control._
   Future {
     breakable {
-      atomic.withControlFlowRecognizer {
-        case c: ControlThrowable => false
+      atomic.withControlFlowRecognizer { case c: ControlThrowable =>
+        false
       } { implicit txn =>
         for (n <- List(1, 2, 3)) {
           pop(lst, n)
@@ -230,7 +218,6 @@ object CompositionExceptions extends App {
   }
 
 }
-
 
 object CompositionCatchingExceptions extends App {
   import scala.concurrent.stm._
@@ -255,8 +242,3 @@ object CompositionCatchingExceptions extends App {
 
   log(s"result - $lst")
 }
-
-
-
-
-

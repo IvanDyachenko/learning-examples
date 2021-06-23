@@ -6,12 +6,11 @@ import java.util.concurrent.atomic.AtomicReference
 
 import scala.annotation.tailrec
 
-/**
- * Implement a PureLazyCell class with the same interface and semantics as the LazyCell class from the previous exercise.
- * The PureLazyCell class assumes that the initialization parameter does not cause side effects,
- * so it can be evaluated more than once.
- * The apply method must be lock-free and should call the initialization as little as possible.
- */
+/** Implement a PureLazyCell class with the same interface and semantics as the LazyCell class from the previous exercise.
+  * The PureLazyCell class assumes that the initialization parameter does not cause side effects,
+  * so it can be evaluated more than once.
+  * The apply method must be lock-free and should call the initialization as little as possible.
+  */
 
 object Ex6 extends App {
 
@@ -22,7 +21,7 @@ object Ex6 extends App {
     @tailrec
     final def apply(): T = r.get match {
       case Some(v) => v
-      case None => {
+      case None    => {
         val v = initialization
         if (!r.compareAndSet(None, Some(v))) apply()
         else v
@@ -42,12 +41,14 @@ object Ex6 extends App {
 
   log("start")
 
-  val t = (1 to 10).map((i) => thread {
-    val sleep = (Math.random * 10000).toInt
-    Thread.sleep(sleep)
+  val t = (1 to 10).map((i) =>
+    thread {
+      val sleep = (Math.random * 10000).toInt
+      Thread.sleep(sleep)
 
-    (1 to 3).foreach((i) => log(s"v$i = ${p.apply}"))
-  })
+      (1 to 3).foreach((i) => log(s"v$i = ${p.apply}"))
+    }
+  )
 
   t.foreach(_.join)
 

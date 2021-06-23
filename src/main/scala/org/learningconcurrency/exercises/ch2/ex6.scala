@@ -4,14 +4,13 @@ package ch2
 
 import scala.collection.mutable._
 
-
 object Ex6 extends App {
 
-  class SyncQueue[T](val n:Int) {
+  class SyncQueue[T](val n: Int) {
 
     private var syncQueue = Queue[T]()
 
-    def getWait():T = this.synchronized {
+    def getWait(): T = this.synchronized {
       while (syncQueue.isEmpty) {
         this.wait()
       }
@@ -37,7 +36,7 @@ object Ex6 extends App {
 
   val producer = thread {
     var x = 0
-    while(x < 15) {
+    while (x < 15) {
       syncVar.putWait(x)
       x = x + 1
     }
@@ -45,7 +44,7 @@ object Ex6 extends App {
 
   val consumer = thread {
     var x = -1
-    while(x < 14) {
+    while (x < 14) {
       x = syncVar.getWait()
       log(s"get: $x")
     }

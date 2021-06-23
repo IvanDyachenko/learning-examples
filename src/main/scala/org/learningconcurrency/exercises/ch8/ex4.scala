@@ -13,26 +13,22 @@ import scala.util.Try
 
 import scala.util.{Failure, Success}
 
-
-/**
- * Use actors to implement the ExecutionContext interface,
- * described in Chapter 3, Traditional Building Blocks of Concurrency.
- */
+/** Use actors to implement the ExecutionContext interface,
+  * described in Chapter 3, Traditional Building Blocks of Concurrency.
+  */
 object Ex4 extends App {
 
   class ActorExecutionContext extends ExecutionContext {
-
 
     class ExecutorActor extends Actor() {
 
       val actorLog = Logging(context.system, this)
 
-      override def receive: Receive = {
-        case ExecutorActor.Execute(runnable) =>
-          Try(runnable.run()) match {
-            case Success(_) => actorLog.info("result OK")
-            case Failure(e) => reportFailure(e)
-          }
+      override def receive: Receive = { case ExecutorActor.Execute(runnable) =>
+        Try(runnable.run()) match {
+          case Success(_) => actorLog.info("result OK")
+          case Failure(e) => reportFailure(e)
+        }
       }
     }
 
@@ -41,7 +37,7 @@ object Ex4 extends App {
       def props = Props(new ExecutorActor)
     }
 
-    val system = ActorSystem("MyActorSystem")
+    val system       = ActorSystem("MyActorSystem")
     val executeActor = system.actorOf(ExecutorActor.props)
 
     override def execute(runnable: Runnable): Unit = executeActor ! ExecutorActor.Execute(runnable)
@@ -50,7 +46,6 @@ object Ex4 extends App {
 
     def shutdown() = system.shutdown()
   }
-
 
   val executionContext = new ActorExecutionContext()
 
@@ -70,6 +65,5 @@ object Ex4 extends App {
   Thread.sleep(2000)
 
   executionContext.shutdown()
-
 
 }

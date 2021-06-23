@@ -2,10 +2,8 @@ package org.learningconcurrency
 package exercises
 package ch4
 
-
-/**
- * Repeat the previous exercise, but use Promise objects instead of future combinators.
- */
+/** Repeat the previous exercise, but use Promise objects instead of future combinators.
+  */
 
 object Ex4 extends App {
 

@@ -2,10 +2,8 @@ package org.learningconcurrency
 package exercises
 package ch4
 
-
-/**
- * Repeat the previous exercise, but use the Scala Async framework.
- */
+/** Repeat the previous exercise, but use the Scala Async framework.
+  */
 
 object Ex5 extends App {
 
@@ -42,6 +40,5 @@ object Ex5 extends App {
   log("f1 = " + Await.result(f1.exists(p), Duration.Inf).toString)
   log("f2 = " + Await.result(f2.exists(p), Duration.Inf).toString)
   log("f3 = " + Await.result(f3.exists(p), Duration.Inf).toString)
-
 
 }

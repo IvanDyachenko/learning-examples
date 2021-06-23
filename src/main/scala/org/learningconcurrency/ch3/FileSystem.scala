@@ -1,8 +1,6 @@
 package org.learningconcurrency
 package ch3
 
-
-
 import java.io._
 import java.util.concurrent._
 import java.util.concurrent.atomic._
@@ -10,8 +8,6 @@ import scala.annotation.tailrec
 import scala.collection._
 import scala.collection.convert.decorateAsScala._
 import org.apache.commons.io.FileUtils
-
-
 
 object FileSystemTest extends App {
   val fileSystem = new FileSystem(".")
@@ -25,7 +21,6 @@ object FileSystemTest extends App {
   val rootFiles = fileSystem.filesInDir("")
   log("All files in the root dir: " + rootFiles.mkString(", "))
 }
-
 
 class FileSystem(val root: String) {
 
@@ -70,13 +65,13 @@ class FileSystem(val root: String) {
   @tailrec private def prepareForDelete(entry: Entry): Boolean = {
     val s0 = entry.state.get
     s0 match {
-      case i: Idle =>
+      case i: Idle     =>
         if (entry.state.compareAndSet(s0, new Deleting)) true
         else prepareForDelete(entry)
       case c: Creating =>
         logMessage("File currently being created, cannot delete.")
         false
-      case c: Copying =>
+      case c: Copying  =>
         logMessage("File currently being copied, cannot delete.")
         false
       case d: Deleting =>
@@ -86,11 +81,11 @@ class FileSystem(val root: String) {
 
   def deleteFile(filename: String): Unit = {
     files.get(filename) match {
-      case None =>
+      case None                       =>
         logMessage(s"Cannot delete - path '$filename' does not exist!")
       case Some(entry) if entry.isDir =>
         logMessage(s"Cannot delete - path '$filename' is a directory!")
-      case Some(entry) =>
+      case Some(entry)                =>
         execute {
           if (prepareForDelete(entry)) {
             if (FileUtils.deleteQuietly(new File(filename)))
@@ -106,10 +101,10 @@ class FileSystem(val root: String) {
       case _: Creating | _: Deleting =>
         logMessage("File inaccessible, cannot copy.")
         false
-      case i: Idle =>
+      case i: Idle                   =>
         if (entry.state.compareAndSet(s0, new Copying(1))) true
         else acquire(entry)
-      case c: Copying =>
+      case c: Copying                =>
         if (entry.state.compareAndSet(s0, new Copying(c.n + 1))) true
         else acquire(entry)
     }
@@ -118,27 +113,27 @@ class FileSystem(val root: String) {
   @tailrec private def release(entry: Entry): Unit = {
     val s0 = entry.state.get
     s0 match {
-      case i: Idle =>
+      case i: Idle                =>
         sys.error("Error - released more times than acquired.")
-      case c: Creating =>
+      case c: Creating            =>
         if (!entry.state.compareAndSet(s0, new Idle)) release(entry)
       case c: Copying if c.n <= 0 =>
         sys.error("Error - cannot have 0 or less copies in progress!")
-      case c: Copying =>
+      case c: Copying             =>
         val newState = if (c.n == 1) new Idle else new Copying(c.n - 1)
         if (!entry.state.compareAndSet(s0, newState)) release(entry)
-      case d: Deleting =>
+      case d: Deleting            =>
         sys.error("Error - releasing a file that is being deleted!")
     }
   }
 
   def copyFile(src: String, dest: String): Unit = {
     files.get(src) match {
-      case None =>
+      case None                             =>
         logMessage(s"File '$src' does not exist.")
       case Some(srcEntry) if srcEntry.isDir =>
         sys.error(s"Path '$src' is a directory!")
-      case Some(srcEntry) =>
+      case Some(srcEntry)                   =>
         execute {
           if (acquire(srcEntry)) try {
             val destEntry = new Entry(false)

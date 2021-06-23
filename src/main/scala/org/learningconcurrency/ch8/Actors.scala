@@ -1,8 +1,6 @@
 package org.learningconcurrency
 package ch8
 
-
-
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.event.Logging
@@ -11,10 +9,8 @@ import akka.actor.ActorSystem
 import scala.io.Source
 import scala.collection._
 
-
-
 class HelloActor(val hello: String) extends Actor {
-  val log = Logging(context.system, this)
+  val log     = Logging(context.system, this)
   def receive = {
     case `hello` =>
       log.info(s"Received a '$hello'... $hello!")
@@ -24,12 +20,10 @@ class HelloActor(val hello: String) extends Actor {
   }
 }
 
-
 object HelloActor {
-  def props(hello: String) = Props(new HelloActor(hello))
+  def props(hello: String)        = Props(new HelloActor(hello))
   def propsVariant(hello: String) = Props(classOf[HelloActor], hello)
 }
-
 
 object ActorsCreate extends App {
   val hiActor: ActorRef = ourSystem.actorOf(HelloActor.props("hi"), name = "greeter")
@@ -40,16 +34,14 @@ object ActorsCreate extends App {
   ourSystem.shutdown()
 }
 
-
 class DeafActor extends Actor {
-  val log = Logging(context.system, this)
-  def receive = PartialFunction.empty
+  val log                          = Logging(context.system, this)
+  def receive                      = PartialFunction.empty
   override def unhandled(msg: Any) = msg match {
     case msg: String => log.info(s"could not handle '$msg'")
     case _           => super.unhandled(msg)
   }
 }
-
 
 object ActorsUnhandled extends App {
   val deafActor = ourSystem.actorOf(Props[DeafActor], name = "deafy")
@@ -60,19 +52,16 @@ object ActorsUnhandled extends App {
   ourSystem.shutdown()
 }
 
-
 class CountdownActor extends Actor {
-  var n = 10
-  def counting: Actor.Receive = {
-    case "count" =>
-      n -= 1
-      log(s"n = $n")
-      if (n == 0) context.become(done)
+  var n                       = 10
+  def counting: Actor.Receive = { case "count" =>
+    n -= 1
+    log(s"n = $n")
+    if (n == 0) context.become(done)
   }
-  def done = PartialFunction.empty
-  def receive = counting
+  def done                    = PartialFunction.empty
+  def receive                 = counting
 }
-
 
 object ActorsCountdown extends App {
   val countdown = ourSystem.actorOf(Props[CountdownActor])
@@ -81,22 +70,20 @@ object ActorsCountdown extends App {
   ourSystem.shutdown()
 }
 
-
 class DictionaryActor extends Actor {
-  private val log = Logging(context.system, this)
-  private val dictionary = mutable.Set[String]()
-  def receive = uninitialized
-  def uninitialized: PartialFunction[Any, Unit] = {
-    case DictionaryActor.Init(path) =>
-      val stream = getClass.getResourceAsStream(path)
-      val words = Source.fromInputStream(stream)
-      for (w <- words.getLines) dictionary += w
-      context.become(initialized)
+  private val log                               = Logging(context.system, this)
+  private val dictionary                        = mutable.Set[String]()
+  def receive                                   = uninitialized
+  def uninitialized: PartialFunction[Any, Unit] = { case DictionaryActor.Init(path) =>
+    val stream = getClass.getResourceAsStream(path)
+    val words  = Source.fromInputStream(stream)
+    for (w <- words.getLines) dictionary += w
+    context.become(initialized)
   }
-  def initialized: PartialFunction[Any, Unit] = {
+  def initialized: PartialFunction[Any, Unit]   = {
     case DictionaryActor.IsWord(w) =>
       log.info(s"word '$w' exists: ${dictionary(w)}")
-    case DictionaryActor.End =>
+    case DictionaryActor.End       =>
       dictionary.clear()
       context.become(uninitialized)
   }
@@ -105,19 +92,17 @@ class DictionaryActor extends Actor {
   }
 }
 
-
 object DictionaryActor {
   case class Init(path: String)
   case class IsWord(w: String)
   case object End
 }
 
-
 object ActorsBecome extends App {
   val dict = ourSystem.actorOf(Props[DictionaryActor], "dictionary")
   dict ! DictionaryActor.IsWord("program")
   Thread.sleep(1000)
-  dict ! DictionaryActor.Init("/org/learningconcurrency/words.txt") // or /usr/share/dict/words 
+  dict ! DictionaryActor.Init("/org/learningconcurrency/words.txt") // or /usr/share/dict/words
   Thread.sleep(1000)
   dict ! DictionaryActor.IsWord("program")
   Thread.sleep(1000)
@@ -130,35 +115,31 @@ object ActorsBecome extends App {
   ourSystem.shutdown()
 }
 
-
 class ParentActor extends Actor {
-  val log = Logging(context.system, this)
+  val log     = Logging(context.system, this)
   def receive = {
     case "create" =>
       context.actorOf(Props[ChildActor])
       log.info(s"created a new child - children = ${context.children}")
-    case "sayhi" =>
+    case "sayhi"  =>
       log.info("Kids, say hi!")
       for (c <- context.children) c ! "sayhi"
-    case "stop" =>
+    case "stop"   =>
       log.info("parent stopping")
       context.stop(self)
   }
 }
 
-
 class ChildActor extends Actor {
-  val log = Logging(context.system, this)
-  def receive = {
-    case "sayhi" =>
-      val parent = context.parent
-      log.info(s"my parent $parent made me say hi!")
+  val log     = Logging(context.system, this)
+  def receive = { case "sayhi" =>
+    val parent = context.parent
+    log.info(s"my parent $parent made me say hi!")
   }
   override def postStop() {
     log.info("child stopped!")
   }
 }
-
 
 object ActorsHierarchy extends App {
   val parent = ourSystem.actorOf(Props[ParentActor], "parent")
@@ -172,21 +153,19 @@ object ActorsHierarchy extends App {
   ourSystem.shutdown()
 }
 
-
 class CheckActor extends Actor {
   import akka.actor.{Identify, ActorIdentity}
-  val log = Logging(context.system, this)
+  val log     = Logging(context.system, this)
   def receive = {
-    case path: String =>
+    case path: String                   =>
       log.info(s"checking path $path")
       context.actorSelection(path) ! Identify(path)
     case ActorIdentity(path, Some(ref)) =>
       log.info(s"found actor $ref on $path")
-    case ActorIdentity(path, None) =>
+    case ActorIdentity(path, None)      =>
       log.info(s"could not find an actor on $path")
   }
 }
-
 
 object ActorsIdentify extends App {
   val checker = ourSystem.actorOf(Props[CheckActor], "checker")
@@ -205,11 +184,10 @@ object ActorsIdentify extends App {
   ourSystem.shutdown()
 }
 
-
 class LifecycleActor extends Actor {
-  val log = Logging(context.system, this)
-  var child: ActorRef = _
-  def receive = {
+  val log                 = Logging(context.system, this)
+  var child: ActorRef     = _
+  def receive             = {
     case num: Double  => log.info(s"got a double - $num")
     case num: Int     => log.info(s"got an integer - $num")
     case lst: List[_] => log.info(s"list - ${lst.head}, ...")
@@ -230,16 +208,14 @@ class LifecycleActor extends Actor {
   override def postStop() = log.info("just stopped")
 }
 
-
 class StringPrinter extends Actor {
-  val log = Logging(context.system, this)
-  def receive = {
-    case msg => log.info(s"child got message '$msg'")
+  val log                       = Logging(context.system, this)
+  def receive                   = { case msg =>
+    log.info(s"child got message '$msg'")
   }
   override def preStart(): Unit = log.info(s"child about to start.")
   override def postStop(): Unit = log.info(s"child just stopped.")
 }
-
 
 object ActorsLifecycle extends App {
   val testy = ourSystem.actorOf(Props[LifecycleActor], "testy")
@@ -257,15 +233,3 @@ object ActorsLifecycle extends App {
   Thread.sleep(1000)
   ourSystem.shutdown()
 }
-
-
-
-
-
-
-
-
-
-
-
-

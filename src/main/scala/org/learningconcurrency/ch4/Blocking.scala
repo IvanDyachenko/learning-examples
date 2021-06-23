@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch4
 
-
-
-
-
-
 object BlockingAwait extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -13,12 +8,11 @@ object BlockingAwait extends App {
   import scala.io.Source
 
   val urlSpecSizeFuture = Future { Source.fromURL("http://www.w3.org/Addressing/URL/url-spec.txt").size }
-  val urlSpecSize = Await.result(urlSpecSizeFuture, 10.seconds)
+  val urlSpecSize       = Await.result(urlSpecSizeFuture, 10.seconds)
 
   log(s"url spec contains $urlSpecSize characters")
 
 }
-
 
 object BlockingSleepBad extends App {
   import scala.concurrent._
@@ -40,7 +34,6 @@ object BlockingSleepBad extends App {
 
 }
 
-
 object BlockingSleepOk extends App {
   import scala.concurrent._
   import ExecutionContext.Implicits.global
@@ -61,4 +54,3 @@ object BlockingSleepOk extends App {
   log(s"Total execution time of the program = ${(endTime - startTime) / 1000000} ms")
 
 }
-

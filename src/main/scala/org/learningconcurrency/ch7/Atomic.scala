@@ -1,11 +1,6 @@
 package org.learningconcurrency
 package ch7
 
-
-
-
-
-
 object AtomicHistoryBad extends App {
   import java.util.concurrent.atomic._
   import scala.annotation.tailrec
@@ -25,7 +20,7 @@ object AtomicHistoryBad extends App {
   }
 
   def getUrlArray(): Array[Char] = {
-    val array = new Array[Char](clen.get)
+    val array   = new Array[Char](clen.get)
     val urlList = urls.get
     for ((character, i) <- urlList.map(_ + "\n").flatten.zipWithIndex) {
       array(i) = character
@@ -46,7 +41,6 @@ object AtomicHistoryBad extends App {
   }
 
 }
-
 
 object AtomicHistorySTM extends App {
   import scala.concurrent._
@@ -84,19 +78,3 @@ object AtomicHistorySTM extends App {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
