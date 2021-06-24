@@ -14,30 +14,13 @@ object Ex9 extends App {
 
     private val tasks = mutable.PriorityQueue[(Int, () => Unit)]()
 
-    def asynchronous(priority: Int)(task: => Unit): Unit = tasks synchronized {
-      tasks.enqueue((priority, () => task))
-      tasks.notify()
-    }
+    def asynchronous(priority: Int)(task: => Unit): Unit = ???
 
     class Worker extends Thread {
 
-      setDaemon(true)
+      def poll() = ???
 
-      def poll() = tasks.synchronized {
-        while (tasks.isEmpty) {
-          tasks.wait()
-        }
-        log("queue: " + tasks.foldLeft("")((s, t) => s"$s${t._1},"))
-        tasks.dequeue()
-      }
-
-      override def run() = {
-        while (true) {
-          poll() match {
-            case (_, task) => task()
-          }
-        }
-      }
+      override def run() = ???
     }
 
     (1 to p).map((i) => new Worker()).map(_.start)

@@ -26,22 +26,9 @@ object Ex2 extends App {
     (0 to length).map((i) => generateSymbol(p))
   }
 
-  def timedForeach(s: Seq[Char]) = {
-    var count = 0
-    def add   = synchronized {
-      count += 1
-    }
+  def timedForeach(s: Seq[Char]) = ???
 
-    warmedTimed(times = 400) {
-      s.par.foreach((s) => if (s == ' ') add)
-    }
-  }
-
-  def timedCount(s: Seq[Char]) = {
-    warmedTimed(times = 400) {
-      s.par.count(_ == ' ')
-    }
-  }
+  def timedCount(s: Seq[Char]) = ???
 
   //probability
   val p = (0 until 10).map { i => i / 9.0 }
@@ -59,13 +46,13 @@ object Ex2 extends App {
   //plot graph
   //uses https://github.com/quantifind/wisp
 
-  import com.quantifind.charts.Highcharts._
+  // import com.quantifind.charts.Highcharts._
 
-  hold
-  line(dataForeach)
-  line(dataCount)
-  title("Ch5 Ex2")
-  legend(Seq("foreach method", "count method"))
-  xAxis("probability")
-  yAxis("time (ms)")
+  // hold
+  // line(dataForeach)
+  // line(dataCount)
+  // title("Ch5 Ex2")
+  // legend(Seq("foreach method", "count method"))
+  // xAxis("probability")
+  // yAxis("time (ms)")
 }

@@ -19,18 +19,7 @@ object Ex8 extends App {
   import scala.util.{Failure, Success}
 
   implicit class PromiseOps[T](val self: Promise[T]) {
-
-    def compose[S](f: S => T): Promise[S] = {
-
-      val ps = Promise[S]
-
-      ps.future.onComplete {
-        case Success(s) => Future(self.trySuccess(f(s)))
-        case Failure(e) => self.tryFailure(e)
-      }
-
-      ps
-    }
+    def compose[S](f: S => T): Promise[S] = ???
   }
 
   //test
@@ -40,7 +29,7 @@ object Ex8 extends App {
   Future {
     Thread.sleep(1000)
     pS.success(1)
-    //    pS.failure(new Exception)
+//  pS.failure(new Exception)
   }
 
   pT.future foreach { case s =>

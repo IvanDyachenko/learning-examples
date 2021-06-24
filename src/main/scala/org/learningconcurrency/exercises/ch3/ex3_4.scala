@@ -11,8 +11,8 @@ import scala.annotation.tailrec
 /** Implement a ConcurrentSortedList class, which implements a concurrent
   *
   * class ConcurrentSortedList[T](implicit val ord: Ordering[T]) {
-  * def add(x: T): Unit = ???
-  * def iterator: Iterator[T] = ???
+  *   def add(x: T): Unit = ???
+  *   def iterator: Iterator[T] = ???
   * }
   *
   * Under the hood, the ConcurrentSortedList class should use a linked list of atomic references.
@@ -33,48 +33,14 @@ object Ex3_4 extends App {
 
     val root = new AtomicReference[Option[Node]](None)
 
-    @tailrec
-    private def add(r: AtomicReference[Option[Node]], x: T): Unit = {
-      val optNode = r.get
-
-      optNode match {
-        case None                   => {
-          if (!r.compareAndSet(optNode, Some(Node(x)))) add(r, x)
-        }
-        case Some(Node(head, tail)) =>
-          if (ord.compare(x, head) <= 0) {
-            //prepend new node
-            val newNode = Node(x)
-            newNode.tail.set(optNode)
-            if (!r.compareAndSet(optNode, Some(newNode))) add(r, x)
-          } else {
-            //add to tail
-            add(tail, x)
-          }
-      }
-    }
+    //@tailrec
+    private def add(r: AtomicReference[Option[Node]], x: T): Unit = ???
 
     def add(x: T): Unit = {
       add(root, x)
     }
 
-    def iterator: Iterator[T] = new Iterator[T] {
-
-      var rIter = root.get
-
-      override def hasNext: Boolean = rIter.isEmpty == false
-
-      override def next(): T = {
-
-        rIter match {
-          case Some(node) => {
-            rIter = node.tail.get
-            node.head
-          }
-          case None       => throw new NoSuchElementException("next on empty iterator")
-        }
-      }
-    }
+    def iterator: Iterator[T] = ???
   }
 
   val csl = new ConcurrentSortedList[Int]()

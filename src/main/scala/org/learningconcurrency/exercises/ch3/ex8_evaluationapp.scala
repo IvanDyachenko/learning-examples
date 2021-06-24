@@ -8,8 +8,10 @@ import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.security.Permission
 
-// This application receives the file path in which the serialized `Function0` object has been written.
-// Then, it reads and evaluates serialized `Function0` object, finally overwrites its result to the same file.
+// This application receives the file path in which the serialized
+// `Function0` object has been written. Then, it reads and evaluates
+// serialized `Function0` object, finally overwrites its result to the
+// same file.
 object Ex8_EvaluationApp extends App {
   System.setSecurityManager(new SecurityManager() {
     // allows access to file.

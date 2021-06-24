@@ -21,18 +21,7 @@ object Ex6 extends App {
   import scala.concurrent.{Future, Promise}
   import scala.sys.process._
 
-  def spawn(command: String): Future[Int] = {
-
-    val p = Promise[Int]
-
-    Future {
-      blocking {
-        p.complete(Try(command !))
-      }
-    }
-
-    p.future
-  }
+  def spawn(command: String): Future[Int] = ???
 
   val f = for (i <- 1 to 100) yield spawn("ping -c 10 google.com")
 

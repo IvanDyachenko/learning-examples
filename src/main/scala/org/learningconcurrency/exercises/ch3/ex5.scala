@@ -5,7 +5,7 @@ package ch3
 /** Implement a LazyCell class with the following interface:
   *
   * class LazyCell[T](initialization: =>T) {
-  * def apply(): T = ???
+  *   def apply(): T = ???
   * }
   *
   * Creating a LazyCell object and calling the apply method must have the
@@ -21,22 +21,7 @@ object Ex5 extends App {
 
   class LazyCell[T](initialization: => T) {
 
-    @volatile
-    var r: Option[T] = None
-
-    def apply(): T = r match {
-      case Some(v) => v
-      case None    =>
-        this synchronized {
-          r match {
-            case Some(v) => v
-            case None    => {
-              r = Some(initialization)
-              r.get
-            }
-          }
-        }
-    }
+    def apply(): T = ???
   }
 
   def func = {

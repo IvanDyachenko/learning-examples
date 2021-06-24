@@ -4,7 +4,6 @@ package ch4
 
 /** Repeat the previous exercise, but use the Scala Async framework.
   */
-
 object Ex5 extends App {
 
   import scala.async.Async.{async, await}
@@ -12,13 +11,7 @@ object Ex5 extends App {
   import ExecutionContext.Implicits.global
 
   implicit class FutureOps[T](val self: Future[T]) {
-    def exists(p: T => Boolean): Future[Boolean] =
-      async {
-        val v = await {
-          self
-        }
-        p(v)
-      }.recover { case _ => false }
+    def exists(p: T => Boolean): Future[Boolean] = ???
   }
 
   //test

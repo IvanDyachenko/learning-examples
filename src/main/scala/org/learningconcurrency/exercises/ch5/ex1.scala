@@ -4,7 +4,6 @@ package ch5
 
 /** Measure the average running time of allocating a simple object on the JVM.
   */
-
 object Ex1 extends App {
 
   object Timed {

@@ -10,23 +10,9 @@ object Ex3 extends App {
 
     private var x: T = null.asInstanceOf[T]
 
-    def get(): T = this.synchronized {
-      if (empty) throw new Exception("must be non-empty")
-      else {
-        empty = true
-        val v = x
-        x = null.asInstanceOf[T]
-        v
-      }
-    }
+    def get(): T = ???
 
-    def put(x: T): Unit = this.synchronized {
-      if (!empty) throw new Exception("must be empty")
-      else {
-        empty = false
-        this.x = x
-      }
-    }
+    def put(x: T): Unit = ???
 
   }
 

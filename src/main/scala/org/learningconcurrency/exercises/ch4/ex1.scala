@@ -26,31 +26,11 @@ object Ex1 extends App {
 
   private val timer = new Timer(true)
 
-  def stopTimer(t: Timer) = {
-    t.cancel()
-    t.purge()
-  }
+  def stopTimer(t: Timer) = ???
 
-  def timeout(p: Promise[String], t: Long): Unit = {
-    timer.schedule(
-      new TimerTask {
-        def run() = {
-          p trySuccess (s"Sorry, timed out ($t ms)")
-        }
-      },
-      t
-    )
-  }
+  def timeout(p: Promise[String], t: Long): Unit = ???
 
-  def timeOutPrinter(t: Timer): Unit = {
-    t.schedule(
-      new TimerTask {
-        override def run(): Unit = print(".")
-      },
-      0,
-      50
-    )
-  }
+  def timeOutPrinter(t: Timer): Unit = ???
 
   while (true) {
     println("---------------------------------------------")

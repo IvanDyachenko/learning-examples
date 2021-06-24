@@ -9,8 +9,8 @@ import scala.util.Try
 /** Implement an abstraction called a single-assignment variable, represented by the IVar class:
   *
   * class IVar[T] {
-  * def apply(): T = ???
-  * def :=(x: T): Unit = ???
+  *   def apply(): T = ???
+  *   def :=(x: T): Unit = ???
   * }
   *
   * When created, the IVar class does not contain a value, and calling apply results in an exception.
@@ -26,11 +26,9 @@ object Ex2 extends App {
 
     val p = Promise[T]
 
-    def apply(): T =
-      if (p.isCompleted) Await.result(p.future, Duration.Inf)
-      else throw new Exception("Not contain a value")
+    def apply(): T = ???
 
-    def :=(x: T): Unit = if (!p.tryComplete(Try(x))) throw new Exception("Value is already assigned")
+    def :=(x: T): Unit = ???
   }
 
   import org.learningconcurrency.ch2.thread

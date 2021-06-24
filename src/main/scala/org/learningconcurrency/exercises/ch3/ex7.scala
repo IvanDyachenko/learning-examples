@@ -4,8 +4,9 @@ package ch3
 
 import scala.collection._
 
-/** Implement a SyncConcurrentMap class that extends the Map interface from the scala.collection.concurrent package.
-  * Use the synchronized statement to protect the state of the concurrent map.
+/** Implement a SyncConcurrentMap class that extends the Map interface
+  * from the scala.collection.concurrent package. Use the synchronized
+  * statement to protect the state of the concurrent map.
   */
 
 object Ex7 extends App {
@@ -14,54 +15,21 @@ object Ex7 extends App {
 
     private val m = mutable.Map.empty[A, B]
 
-    override def putIfAbsent(k: A, v: B): Option[B] = m synchronized {
-      m.get(k) match {
-        case optV @ Some(_) => optV
-        case None           => m.put(k, v)
-      }
-    }
+    override def putIfAbsent(k: A, v: B): Option[B] = ???
 
-    def replace(k: A, oldvalue: B, newvalue: B): Boolean = m synchronized {
-      m.get(k) match {
-        case Some(v) if ((v != null) && v.equals(oldvalue)) || ((v == null) && (oldvalue == null)) =>
-          m.put(k, newvalue); true
-        case _                                                                                     => false
-      }
-    }
+    def replace(k: A, oldvalue: B, newvalue: B): Boolean = ???
 
-    def remove(k: A, v: B): Boolean = m synchronized {
-      m.get(k) match {
-        case Some(oldvalue) if ((oldvalue != null) && oldvalue.equals(v)) || ((v == null) && (oldvalue == null)) =>
-          m.remove(k); true
-        case _                                                                                                   => false
-      }
-    }
+    def remove(k: A, v: B): Boolean = ???
 
-    override def replace(k: A, v: B): Option[B] = m synchronized {
-      m.get(k) match {
-        case old @ Some(oldvalue) => m.put(k, v); old
-        case None                 => None
-      }
+    override def replace(k: A, v: B): Option[B] = ???
 
-    }
+    override def +=(kv: (A, B)): SyncConcurrentMap.this.type = ???
 
-    override def +=(kv: (A, B)): SyncConcurrentMap.this.type = m synchronized {
-      m.put(kv._1, kv._2)
-      this
-    }
+    override def -=(key: A): SyncConcurrentMap.this.type = ???
 
-    override def -=(key: A): SyncConcurrentMap.this.type = m synchronized {
-      m.remove(key)
-      this
-    }
+    override def get(key: A): Option[B] = ???
 
-    override def get(key: A): Option[B] = m synchronized {
-      m.get(key)
-    }
-
-    override def iterator: scala.Iterator[(A, B)] = m synchronized {
-      m.iterator
-    }
+    override def iterator: scala.Iterator[(A, B)] = ???
   }
 
   val m = new SyncConcurrentMap[Int, String]()

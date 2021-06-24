@@ -16,14 +16,9 @@ object Ex1 extends App {
 
   class PiggybackContext extends ExecutionContext {
 
-    override def execute(runnable: Runnable): Unit = Try(runnable.run()) match {
-      case Success(r) => log("result: OK")
-      case Failure(e) => reportFailure(e)
-    }
+    override def execute(runnable: Runnable): Unit = ???
 
-    override def reportFailure(cause: Throwable): Unit = {
-      log(s"error: ${cause.getMessage}")
-    }
+    override def reportFailure(cause: Throwable): Unit = ???
   }
 
   val e = new PiggybackContext

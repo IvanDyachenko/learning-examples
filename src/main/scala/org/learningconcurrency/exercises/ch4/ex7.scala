@@ -5,8 +5,8 @@ package ch4
 /** Implement the IMap class, which represents a single-assignment map:
   *
   * class IMap[K, V] {
-  * def update(k: K, v: V): Unit
-  * def apply(k: K): Future[V]
+  *   def update(k: K, v: V): Unit
+  *   def apply(k: K): Future[V]
   * }
   *
   * Pairs of keys and values can be added to the IMap object,
@@ -34,39 +34,13 @@ object Ex7 extends App {
 
     private val m = new ConcurrentHashMap[K, Promise[V]]().asScala
 
-    private def createPromise(v: V) = {
-      val p = Promise[V]
-      p.success(v)
-      p
-    }
+    private def createPromise(v: V) = ???
 
-    private def createEmptyPromise(k: K): Promise[V] = {
-      val p = Promise[V]
-      m.putIfAbsent(k, p) match {
-        case Some(old) => old
-        case None      => p
-      }
-    }
+    private def createEmptyPromise(k: K): Promise[V] = ???
 
-    def update(k: K, v: V): Unit = {
-      m.putIfAbsent(k, createPromise(v)) match {
-        case Some(p) =>
-          try {
-            p.success(v)
-          } catch {
-            case e: IllegalStateException => throw new Exception("A specific key can be assigned only once")
-            case e                        => throw e
-          }
-        case None    =>
-      }
-    }
+    def update(k: K, v: V): Unit = ???
 
-    def apply(k: K): Future[V] = {
-      m.get(k) match {
-        case Some(p) => p.future
-        case None    => createEmptyPromise(k).future
-      }
-    }
+    def apply(k: K): Future[V] = ???
 
   }
 

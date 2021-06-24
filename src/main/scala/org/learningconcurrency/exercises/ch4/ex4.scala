@@ -12,13 +12,7 @@ object Ex4 extends App {
 
   implicit class FutureOps[T](val self: Future[T]) {
 
-    def exists(p: T => Boolean): Future[Boolean] = {
-
-      val pr = Promise[Boolean]
-      self foreach ((t: T) => pr.success(p(t)))
-      self.failed foreach (_ => pr.success(false))
-      pr.future
-    }
+    def exists(p: T => Boolean): Future[Boolean] = ???
   }
 
   //test

@@ -10,31 +10,13 @@ object Ex5 extends App {
 
     private var x: T = null.asInstanceOf[T]
 
-    def isEmpty = synchronized {
-      empty
-    }
+    def isEmpty = ???
 
-    def nonEmpty = synchronized {
-      !empty
-    }
+    def nonEmpty = ???
 
-    def getWait(): T = this.synchronized {
-      while (empty)
-        this.wait()
+    def getWait(): T = ???
 
-      empty = true
-      this.notify()
-      x
-    }
-
-    def putWait(x: T): Unit = this.synchronized {
-      while (!empty)
-        this.wait()
-
-      empty = false
-      this.x = x
-      this.notify()
-    }
+    def putWait(x: T): Unit = ???
 
   }
 

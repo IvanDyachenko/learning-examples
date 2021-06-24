@@ -19,7 +19,7 @@ object Ex3 extends App {
   import ExecutionContext.Implicits.global
 
   implicit class FutureOps[T](val self: Future[T]) {
-    def exists(p: T => Boolean): Future[Boolean] = self.map(p)
+    def exists(p: T => Boolean): Future[Boolean] = ???
   }
 
   //test
