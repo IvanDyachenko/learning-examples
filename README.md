@@ -1,7 +1,6 @@
 Learning Concurrent Programming in Scala
 ========================================
-
-[![Build Status](https://travis-ci.org/concurrent-programming-in-scala/learning-examples.svg?branch=master)](https://travis-ci.org/concurrent-programming-in-scala/learning-examples)
+[![Build Status](https://github.com/IvanDyachenko/learning-examples/actions/workflows/scala.yml/badge.svg?branch=master)](https://github.com/IvanDyachenko/learning-examples/actions/workflows/scala.yml)
 
 This repository contains the complete examples for the books Learning Concurrent Programming in Scala, published by Packt.
 
